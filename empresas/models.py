@@ -1,0 +1,85 @@
+from django.db import models
+
+
+# Create your models here.
+class Provincia(models.Model):
+    name = models.CharField(max_length=255)
+    def __unicode__(self):
+        return self.name
+
+class TipoIva(models.Model):
+    tipo = models.FloatField()
+    def __unicode__(self):
+        return unicode(self.tipo)
+
+class TipoEmpresa(models.Model):
+    name = models.CharField(max_length=255)
+    def __unicode__(self):
+        return self.name
+    
+
+class Empresa(models.Model):
+    name = models.CharField(max_length=255)
+    nif = models.CharField(max_length=25, blank=True)
+    direccion = models.CharField(max_length=255, blank=True)
+    cp = models.CharField(max_length=25, blank=True)
+    provincia = models.ForeignKey(Provincia, blank=True)
+    telefonos = models.CharField(max_length=25, blank=True)
+    obs = models.TextField(blank=True)
+    tipoempresa = models.ForeignKey(TipoEmpresa)
+    codigo_certificacion = models.CharField(max_length=255, blank=True)
+    def __unicode__(self):
+        return self.name
+
+class Empleado(models.Model):
+    name = models.CharField(max_length=25)
+    apellido1 = models.CharField(max_length=25)
+    apellido2 = models.CharField(max_length=25)
+    nif = models.CharField(max_length=25)
+    empresa = models.ForeignKey(Empresa)
+    def __unicode__(self):
+        return self.name
+
+class Camion(models.Model):
+    matricula = models.CharField(max_length=25)
+    empresa = models.ForeignKey(Empresa)
+    def __unicode__(self):
+        return self.empresa.name + " " + unicode(self.matricula)
+
+class TipoOperacion(models.Model):
+    name = models.CharField(max_length=255)
+    def __unicode__(self):
+        return self.name
+
+class Factura(models.Model):
+    empresa = models.ForeignKey(Empresa, related_name="factura_empresa_set")
+    cliente = models.ForeignKey(Empresa, related_name="factura_cliente_set")
+    tipo = models.ForeignKey(TipoOperacion)
+    numero = models.IntegerField()
+    emision = models.DateField()
+    def __unicode__(self):
+        return unicode(self.emision) + unicode(self.numero) + " - " + self.empresa + " - " + self.cliente  
+
+class DetalleFactura(models.Model):
+    concepto = models.CharField(max_length=255)
+    cantidad = models.FloatField()
+    valor = models.FloatField()
+    factura = models.ForeignKey(Factura)
+    def __unicode__(self):
+        return self.concepto
+    
+class Recibo(models.Model):
+    numero = models.IntegerField()
+    empresa = models.ForeignKey(Empresa, related_name="recibo_empresa_set")
+    cliente = models.ForeignKey(Empresa, related_name="recibo_cliente_set")
+    tipo = models.ForeignKey(TipoOperacion)
+    emision = models.DateField()
+    def __unicode__(self):
+        return unicode(self.numero)
+
+
+class DetalleRecibo(models.Model):
+    concepto = models.CharField(max_length=255)
+    cantidad = models.FloatField()
+    valor = models.FloatField()
+    recibo = models.ForeignKey(Factura)

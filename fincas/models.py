@@ -1,6 +1,8 @@
 from django.db import models
+from django import forms
 from forestal2.empresas.models import Empresa, Camion
 from django.utils.encoding import smart_unicode
+import datetime
 
 
 class Concello(models.Model):
@@ -38,7 +40,7 @@ class Finca(models.Model):
     parcela = models.IntegerField()
     agregado = models.IntegerField(blank=True)
     zona = models.IntegerField(blank=True)
-    superficie = models.IntegerField(blank=True)
+    superficie = models.FloatField(blank=True)
     codigo_ref = models.CharField(max_length=255, default="", blank=True)
     obs = models.TextField(blank=True)
     modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal")
@@ -87,6 +89,8 @@ class ViaxeCamion(models.Model):
     destino = models.ForeignKey(Empresa)
     def __unicode__(self):
         return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
+
+
     
 # Formerly Permiso Forestal
 class Tala(models.Model):
@@ -104,4 +108,15 @@ class Tala(models.Model):
         verbose_name = "Servizo Forestal"
     def __unicode__(self):
         return str(self.tipo) + " // " + unicode(self.comezo) + " // " + unicode (self.final)
+
+
+class TalaForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(TalaForm, self).__init__(*args, **kwargs)
+        self.fields['viaxecamions'].queryset =  ViaxeCamion.objects.filter(dia__gte = self.initial['comezo'])
+
+    class Meta:
+        model = Tala
+
 

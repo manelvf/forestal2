@@ -61,12 +61,14 @@ class Factura(models.Model):
         return unicode(self.emision) + unicode(self.numero) + " - " + self.empresa + " - " + self.cliente  
 
 class DetalleFactura(models.Model):
+    finca = models.ForeignKey("fincas.Finca", blank=True, null=True)
     concepto = models.CharField(max_length=255)
     cantidad = models.FloatField()
     valor = models.FloatField()
     factura = models.ForeignKey(Factura)
     def __unicode__(self):
-        return self.concepto
+        return unicode(self.finca) + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)
+
     
 class Recibo(models.Model):
     numero = models.IntegerField()

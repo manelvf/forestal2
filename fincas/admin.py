@@ -1,7 +1,7 @@
 from django.contrib import admin
 from forestal2.ReadOnly import ReadOnlyAdminFields
 
-from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm
+from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade
 
 class FincaAdmin(admin.ModelAdmin):
     save_as = True
@@ -39,4 +39,5 @@ admin.site.register(Certificacion)
 admin.site.register(Especie)
 admin.site.register(ViaxeCamion,ViaxeCamionAdmin)
 admin.site.register(Tala, TalaAdmin)
+admin.site.register(Unidade)
 

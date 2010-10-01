@@ -1,9 +1,16 @@
-from django.db import models
-from django import forms
-from forestal2.empresas.models import Empresa, Camion
 from django.utils.encoding import smart_unicode
 import datetime
 
+from django.db import models
+from django import forms
+
+from forestal2.empresas.models import Empresa, Camion
+
+class Unidade(models.Model):
+    name = models.CharField(max_length=50)
+    abrv = models.CharField(max_length=10)
+    def __unicode__(self):
+        return self.abrv or ""
 
 class Concello(models.Model):
     name = models.CharField(max_length=255)
@@ -21,7 +28,7 @@ class Lugar(models.Model):
     parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
     concello = models.ForeignKey(Concello)
     def __unicode__(self):
-        return self.name
+        return self.name + u", " + unicode(self.parroquia) 
     
 class ModeloForestal(models.Model):
     name = models.CharField(max_length=100)
@@ -52,6 +59,7 @@ class Finca(models.Model):
     ha_total = models.FloatField(blank=True)
     dono = models.ForeignKey(Empresa, related_name="finca_dono_set")
     empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set")
+    unidade = models.ForeignKey(Unidade,blank=True,null=True)
 
     def __unicode__(self):
         s = ""
@@ -61,6 +69,7 @@ class Finca(models.Model):
             s +=  " Parroquia: " + unicode(self.lugar.parroquia) + " Lugar: " + unicode(self.lugar.name) + " . "
 
         return s + " Pol: " + str(self.poligon) + ", Parcela:" +str(self.parcela)
+
 
 class ServizoForestalTipo(models.Model):
     name = models.CharField(max_length=100)
@@ -76,17 +85,22 @@ class Certificacion(models.Model):
     def __unicode__(self):
         return unicode(self.finca) + " // Envio: " + unicode(self.envio_documentacion) + " // Aprobacion: " + unicode(self.aprobacion)
 
+
 class Especie(models.Model):
     name = models.CharField(max_length=100)
     codigo = models.CharField(max_length=100)
     def __unicode__(self):
         return self.name
 
+
 class ViaxeCamion(models.Model):
     dia = models.DateField()
     camion = models.ForeignKey(Camion)
     tm = models.FloatField()
+    estereo = models.FloatField()
+    metrocubico = models.FloatField()
     destino = models.ForeignKey(Empresa)
+    origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     def __unicode__(self):
         return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
 
@@ -99,7 +113,7 @@ class Tala(models.Model):
     permiso = models.DateField()
     tm_permiso = models.FloatField(verbose_name=u"Tm/pes permiso")
     empresas = models.ManyToManyField(Empresa)
-    viaxecamions = models.ManyToManyField(ViaxeCamion, blank=True)
+    viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     finca = models.ForeignKey(Finca)
     tipo = models.ForeignKey(ServizoForestalTipo)
     obs = models.TextField(blank=True)
@@ -107,14 +121,16 @@ class Tala(models.Model):
     class Meta:
         verbose_name = "Servizo Forestal"
     def __unicode__(self):
-        return str(self.tipo) + " // " + unicode(self.comezo) + " // " + unicode (self.final)
+        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final)
 
 
 class TalaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TalaForm, self).__init__(*args, **kwargs)
-        self.fields['viaxecamions'].queryset =  ViaxeCamion.objects.filter(dia__gte = self.initial['comezo'])
+        
+        if self.initial.has_key('comezo'):
+            self.fields['viaxecamions'].queryset =  ViaxeCamion.objects.filter(dia__gte = self.initial['comezo'])
 
     class Meta:
         model = Tala

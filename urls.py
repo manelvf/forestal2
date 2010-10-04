@@ -18,12 +18,12 @@ urlpatterns = patterns('',
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^databrowse/(.*)', databrowse.site.root),
-    (r'^homogeneidade/', 'forestal2.fincas.views.homogeneidade' ),
+    (r'^forestal/admin/doc/', include('django.contrib.admindocs.urls')),
+    (r'^forestal/databrowse/(.*)', databrowse.site.root),
+    (r'^forestal/homogeneidade/', 'forestal2.fincas.views.homogeneidade' ),
 
     # Uncomment the next line to enable the admin:
-    (r'^', include(admin.site.urls)),
+    (r'^forestal/', include(admin.site.urls)),
 
 )
 

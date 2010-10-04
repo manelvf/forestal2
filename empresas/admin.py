@@ -31,3 +31,17 @@ admin.site.register(Provincia)
 admin.site.register(TipoIva)
 
 
+from django.contrib import databrowse
+
+databrowse.site.register(TipoEmpresa)
+databrowse.site.register(Empresa)
+databrowse.site.register(Empleado)
+databrowse.site.register(Camion)
+databrowse.site.register(TipoOperacion)
+databrowse.site.register(Factura)
+databrowse.site.register(DetalleFactura)
+databrowse.site.register(Recibo)
+databrowse.site.register(DetalleRecibo)
+databrowse.site.register(Provincia)
+databrowse.site.register(TipoIva)
+

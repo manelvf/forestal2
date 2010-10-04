@@ -41,3 +41,15 @@ admin.site.register(ViaxeCamion,ViaxeCamionAdmin)
 admin.site.register(Tala, TalaAdmin)
 admin.site.register(Unidade)
 
+from django.contrib import databrowse
+
+databrowse.site.register(Finca)
+databrowse.site.register(Concello)
+databrowse.site.register(Parroquia)
+databrowse.site.register(Lugar)
+databrowse.site.register(ModeloForestal)
+databrowse.site.register(ServizoForestalTipo)
+databrowse.site.register(Certificacion)
+databrowse.site.register(Especie)
+databrowse.site.register(ViaxeCamion)
+databrowse.site.register(Tala)

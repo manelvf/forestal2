@@ -1,0 +1,20 @@
+<html>
+
+
+<body>
+
+<a href="/">Voltar a Administración</a>
+
+<p />
+
+<table>
+{% for item in listaCamions %}
+<tr>
+    <td><a href="{% url admin:fincas_viaxecamion_change item.id %}">{{ item }}</a></td>
+</tr>
+{% endfor %}
+</table>
+{{ s }}
+
+</body>
+</html>

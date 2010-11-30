@@ -1,4 +1,6 @@
+from django.core import serializers
 from django.utils.encoding import smart_unicode
+
 import datetime
 
 from django.db import models
@@ -6,11 +8,13 @@ from django import forms
 
 from forestal2.empresas.models import Empresa, Camion
 
+
 class Unidade(models.Model):
     name = models.CharField(max_length=50)
     abrv = models.CharField(max_length=10)
     def __unicode__(self):
         return self.abrv or ""
+
 
 class Concello(models.Model):
     name = models.CharField(max_length=255)

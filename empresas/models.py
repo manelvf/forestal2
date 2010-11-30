@@ -57,12 +57,14 @@ class Factura(models.Model):
     tipo = models.ForeignKey(TipoOperacion)
     numero = models.IntegerField()
     emision = models.DateField()
+    
     def __unicode__(self):
-        return unicode(self.emision) + unicode(self.numero) + " - " + self.empresa + " - " + self.cliente  
+        return unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
 
 class DetalleFactura(models.Model):
     finca = models.ForeignKey("fincas.Finca", blank=True, null=True)
     concepto = models.CharField(max_length=255)
+    tipo_iva = models.ForeignKey("TipoIva",null=True)
     cantidad = models.FloatField()
     valor = models.FloatField()
     factura = models.ForeignKey(Factura)

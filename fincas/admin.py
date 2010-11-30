@@ -1,7 +1,11 @@
+import re
+
+from django.core import serializers
 from django.contrib import admin
 from forestal2.ReadOnly import ReadOnlyAdminFields
 
 from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade
+from forestal2.memento.models import Memento
 
 class FincaAdmin(admin.ModelAdmin):
     save_as = True
@@ -29,6 +33,27 @@ class ViaxeCamionAdmin(admin.ModelAdmin):
     list_display = ('dia','camion','tm','destino')
     list_filter = ('dia','camion','tm','destino')
 
+
+def save_model(self, request, obj, form, change):
+    obj.save()
+
+    m = re.match(r"[^(]*", self.model.__doc__)
+    if m is not None:
+        modelName = m.group()
+    else:
+        modelName = "Unable to retrieve"
+
+    data = serializers.serialize("json", [obj, ])
+    m = Memento(app="Fincas",model=modelName,data=data, user=request.user)
+    m.save()
+        
+class UnidadeAdmin(admin.ModelAdmin):
+    pass
+
+UnidadeAdmin.save_model = save_model
+FincaAdmin.save_model = save_model
+
+
 admin.site.register(Finca, FincaAdmin)
 admin.site.register(Concello)
 admin.site.register(Parroquia)
@@ -39,7 +64,7 @@ admin.site.register(Certificacion)
 admin.site.register(Especie)
 admin.site.register(ViaxeCamion,ViaxeCamionAdmin)
 admin.site.register(Tala, TalaAdmin)
-admin.site.register(Unidade)
+admin.site.register(Unidade,UnidadeAdmin)
 
 from django.contrib import databrowse
 

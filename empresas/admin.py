@@ -12,10 +12,18 @@ class DetalleFacturaAdmin(admin.ModelAdmin):
     list_display = ('finca', 'concepto', 'factura')
     list_filter = ('finca', 'concepto', 'factura')
 
+class DetalleTabularAdmin(admin.TabularInline):
+    model = DetalleFactura
+    #fk_name = "finca"
+
+
 class FacturaAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('empresa', 'cliente', 'tipo', 'numero', 'emision')
     list_filter = ('empresa', 'cliente', 'tipo', 'numero', 'emision')
+    inlines = [
+        DetalleTabularAdmin,
+    ]
     
 
 admin.site.register(TipoEmpresa)
@@ -23,7 +31,7 @@ admin.site.register(Empresa, EmpresaAdmin)
 admin.site.register(Empleado)
 admin.site.register(Camion)
 admin.site.register(TipoOperacion)
-admin.site.register(Factura)
+admin.site.register(Factura, FacturaAdmin)
 admin.site.register(DetalleFactura, DetalleFacturaAdmin)
 admin.site.register(Recibo)
 admin.site.register(DetalleRecibo)

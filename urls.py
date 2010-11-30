@@ -18,12 +18,17 @@ urlpatterns = patterns('',
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^databrowse/(.*)', databrowse.site.root),
     (r'^homogeneidade/', 'forestal2.fincas.views.homogeneidade' ),
 
+    (r'^admin_tools/', include('admin_tools.urls')),
+
+    (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
+    {'document_root': '/home/manel/projects/forestal2/media/'}),
+
     # Uncomment the next line to enable the admin:
-    (r'^', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 
 )
 

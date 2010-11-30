@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     {'document_root': '/home/manel/projects/forestal2/media/'}),
 
     # Uncomment the next line to enable the admin:
-    (r'^admin/', include(admin.site.urls)),
+    (r'^/', include(admin.site.urls)),
 
 )
 

@@ -43,6 +43,16 @@ class ModeloForestal(models.Model):
         verbose_name = "Modelo Forestal"
 
 
+class Monte(models.Model):
+    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
+    concello = models.ForeignKey(Concello)
+    lugar = models.ForeignKey(Lugar,blank=True)
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 # Create your models here.
 class Finca(models.Model):
     concello = models.ForeignKey(Concello)
@@ -51,6 +61,7 @@ class Finca(models.Model):
     parcela = models.IntegerField()
     agregado = models.IntegerField(blank=True)
     zona = models.IntegerField(blank=True)
+    monte = models.ForeignKey(Monte,blank=True,null=True)
     superficie = models.FloatField(blank=True)
     codigo_ref = models.CharField(max_length=255, default="", blank=True)
     obs = models.TextField(blank=True)
@@ -65,6 +76,8 @@ class Finca(models.Model):
     empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set")
     unidade = models.ForeignKey(Unidade,blank=True,null=True)
 
+    class Meta:
+        verbose_name = "Parcela"
     def __unicode__(self):
         s = ""
         if self.concello is not None:
@@ -116,7 +129,8 @@ class Tala(models.Model):
     comezo = models.DateField()
     final = models.DateField(blank=True)
     permiso = models.DateField()
-    tm_permiso = models.FloatField(verbose_name=u"Tm/pes permiso")
+    tm_permiso = models.FloatField(verbose_name=u"Pes permiso")
+    m2_permiso = models.FloatField(verbose_name=u"m3 permiso", default=0)
     empresas = models.ManyToManyField(Empresa)
     viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     finca = models.ForeignKey(Finca)

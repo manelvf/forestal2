@@ -4,13 +4,13 @@ from django.core import serializers
 from django.contrib import admin
 from forestal2.ReadOnly import ReadOnlyAdminFields
 
-from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade
+from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte
 from forestal2.memento.models import Memento
 
 class FincaAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('concello', 'lugar', 'poligon', 'parcela')
-    list_filter = ('concello', 'lugar', 'poligon', 'parcela')
+    list_display = ('concello', 'lugar', 'poligon', 'parcela','monte')
+    list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte')
 
 class ConcelloAdmin(admin.ModelAdmin):
     pass
@@ -65,6 +65,7 @@ admin.site.register(Especie)
 admin.site.register(ViaxeCamion,ViaxeCamionAdmin)
 admin.site.register(Tala, TalaAdmin)
 admin.site.register(Unidade,UnidadeAdmin)
+admin.site.register(Monte)
 
 from django.contrib import databrowse
 
@@ -78,3 +79,4 @@ databrowse.site.register(Certificacion)
 databrowse.site.register(Especie)
 databrowse.site.register(ViaxeCamion)
 databrowse.site.register(Tala)
+databrowse.site.register(Monte)

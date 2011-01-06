@@ -26,10 +26,6 @@ class CustomIndexDashboard(Dashboard):
                     'url': '/homogeneidade/',
                 },
                 {
-                    'title': _('Return to site'),
-                    'url': '/',
-                },
-                {
                     'title': _('Change password'),
                     'url': reverse('admin:password_change'),
                 },
@@ -59,13 +55,16 @@ class CustomIndexDashboard(Dashboard):
         ))
 
         # append a feed module
+        """
         self.children.append(modules.Feed(
             title=_('Latest Django News'),
             feed_url='http://www.djangoproject.com/rss/weblog/',
             limit=5
         ))
+        """
 
         # append another link list module for "support".
+        """
         self.children.append(modules.LinkList(
             title=_('Support'),
             children=[
@@ -86,6 +85,8 @@ class CustomIndexDashboard(Dashboard):
                 },
             ]
         ))
+        """
+
 
     def init_with_context(self, context):
         """

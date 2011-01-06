@@ -9,8 +9,8 @@ class EmpresaAdmin(admin.ModelAdmin):
 
 class DetalleFacturaAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('finca', 'concepto', 'factura')
-    list_filter = ('finca', 'concepto', 'factura')
+    list_display = ('servizo', 'concepto', 'factura')
+    list_filter = ('servizo', 'concepto', 'factura')
 
 class DetalleTabularAdmin(admin.TabularInline):
     model = DetalleFactura

@@ -2,6 +2,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 
+from forestal2.settings import ENV_BASE_URL
+
 # to activate your index dashboard add the following to your settings.py:
 #
 # ADMIN_TOOLS_INDEX_DASHBOARD = 'forestal2.dashboard.CustomIndexDashboard'
@@ -23,7 +25,7 @@ class CustomIndexDashboard(Dashboard):
             children=[
                 {
                     'title': _('Comprobar relacion entre viaxes de camion-cortas'),
-                    'url': '/homogeneidade/',
+                    'url': ENV_BASE_URL + '/homogeneidade/',
                 },
                 {
                     'title': _('Change password'),

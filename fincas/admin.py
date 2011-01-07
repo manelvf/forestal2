@@ -30,7 +30,7 @@ class LugarAdmin(admin.ModelAdmin):
 
 class ViaxeCamionAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('dia','camion','tm','destino')
+    list_display = ('dia','camion','tm','destino','get_origen')
     list_filter = ('dia','camion','tm','destino')
 
 

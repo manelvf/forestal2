@@ -119,6 +119,16 @@ class ViaxeCamion(models.Model):
     destino = models.ForeignKey(Empresa)
     origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     obs = models.TextField(blank=True)
+
+    def get_origen(self):
+        s = ""
+        for k in self.origen.all():
+            s += unicode(k)
+        return s
+
+    get_origen.short_description = u"Orixe"
+
+
     def __unicode__(self):
         return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
 

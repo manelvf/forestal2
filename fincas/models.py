@@ -1,7 +1,9 @@
+from pprint import pprint
+import datetime
+
 from django.core import serializers
 from django.utils.encoding import smart_unicode
 
-import datetime
 
 from django.db import models
 from django import forms
@@ -120,13 +122,51 @@ class ViaxeCamion(models.Model):
     origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     obs = models.TextField(blank=True)
 
-    def get_origen(self):
+    def get_concello(self):
         s = ""
-        for k in self.origen.all():
-            s += unicode(k)
+
+        k = self.origen.all()
+        if len(k) > 0:
+            s = unicode(k[0].finca.concello)
+
         return s
 
-    get_origen.short_description = u"Orixe"
+    get_concello.short_description = u"Concello"
+
+    def get_poligon(self):
+        s = ""
+
+        k = self.origen.all()
+        if len(k) > 0:
+            s = unicode(k[0].finca.poligon)
+
+        return s
+
+    get_poligon.short_description = u"Poligono"
+
+    def get_parcela(self):
+        s = ""
+
+        k = self.origen.all()
+        if len(k) > 0:
+            s = unicode(k[0].finca.parcela)
+
+        return s
+
+    get_parcela.short_description = u"Parcela"
+
+    def get_monte(self):
+        s = ""
+
+        k = self.origen.all()
+        if len(k) > 0:
+            s = unicode(k[0].finca.monte)
+            if s == "None":
+                s = ""
+
+        return s
+
+    get_monte.short_description = u"Monte"
 
 
     def __unicode__(self):

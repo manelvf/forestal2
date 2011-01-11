@@ -2,8 +2,10 @@ import re
 
 from django.core import serializers
 from django.contrib import admin
-from forestal2.ReadOnly import ReadOnlyAdminFields
+from reversion.admin import VersionAdmin
 
+
+from forestal2.ReadOnly import ReadOnlyAdminFields
 from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte
 from forestal2.memento.models import Memento
 
@@ -30,7 +32,7 @@ class LugarAdmin(admin.ModelAdmin):
 
 class ViaxeCamionAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('dia','camion','tm','destino','get_origen')
+    list_display = ('dia','camion','tm','destino','get_concello','get_poligon','get_parcela','get_monte')
     list_filter = ('dia','camion','tm','destino')
 
 

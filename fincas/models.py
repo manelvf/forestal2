@@ -122,6 +122,17 @@ class ViaxeCamion(models.Model):
     origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     obs = models.TextField(blank=True)
 
+    def get_permission(self):
+        s = ""
+
+        k = self.origen.all()
+        if len(k) > 0:
+            s = unicode(k[0].permiso)
+
+        return s
+
+    get_permission.short_description = u"Data Permiso"
+
     def get_concello(self):
         s = ""
 

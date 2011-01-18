@@ -19,7 +19,7 @@ class DetalleTabularAdmin(admin.TabularInline):
 
 class FacturaAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('empresa', 'cliente', 'tipo', 'numero', 'emision')
+    list_display = ('empresa', 'cliente', 'tipo', 'numero', 'emision','get_parcelas')
     list_filter = ('empresa', 'cliente', 'tipo', 'numero', 'emision')
     inlines = [
         DetalleTabularAdmin,

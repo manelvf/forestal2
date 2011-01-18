@@ -1,4 +1,5 @@
 from django.db import models
+from forestal2.settings import ENV_BASE_URL
 
 
 # Create your models here.
@@ -58,8 +59,22 @@ class Factura(models.Model):
     numero = models.IntegerField()
     emision = models.DateField()
     
+    def get_parcelas(self):
+        s = ""
+
+        b = self.detallefactura_set.all()
+        if len(b) > 0:
+            for k in b:
+                s += u'<a href="'+ ENV_BASE_URL +'/fincas/tala/'+unicode(k.servizo.id)+'" >' + unicode(k) + u'</a> <br />'
+
+        return s
+
+    get_parcelas.short_description = u"parcelas"
+    get_parcelas.allow_tags=True
+
     def __unicode__(self):
         return unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
+
 
 class DetalleFactura(models.Model):
     #finca = models.ForeignKey("fincas.Finca", blank=True, null=True)
@@ -70,7 +85,7 @@ class DetalleFactura(models.Model):
     valor = models.FloatField()
     factura = models.ForeignKey(Factura)
     def __unicode__(self):
-        return unicode(self.finca) + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)
+        return unicode(self.servizo) + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)
 
     
 class Recibo(models.Model):

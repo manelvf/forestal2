@@ -73,7 +73,7 @@ class Factura(models.Model):
     get_parcelas.allow_tags=True
 
     def __unicode__(self):
-        return u'. ' + unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
+        return unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
 
 
 class DetalleFactura(models.Model):
@@ -85,7 +85,7 @@ class DetalleFactura(models.Model):
     valor = models.FloatField()
     factura = models.ForeignKey(Factura)
     def __unicode__(self):
-        return unicode(self.servizo) + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)
+        return unicode(self.servizo) + u" - " + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)
 
     
 class Recibo(models.Model):
@@ -103,3 +103,4 @@ class DetalleRecibo(models.Model):
     cantidad = models.FloatField()
     valor = models.FloatField()
     recibo = models.ForeignKey(Factura)
+

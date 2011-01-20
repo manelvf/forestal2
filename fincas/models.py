@@ -201,7 +201,7 @@ class Tala(models.Model):
     def get_viaxes(self):
         v = self.viaxecamions.all()
 
-        return u'<a href="' + ENV_BASE_URL + 'listaviaxes/' + unicode(self.id) + '" >' + unicode(len(v)) + u'</a>'
+        return u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' + unicode(len(v)) + u'</a>'
 
     get_viaxes.short_description = u'N Viaxes'
     get_viaxes.allow_tags = True

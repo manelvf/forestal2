@@ -85,9 +85,9 @@ class Finca(models.Model):
         if self.concello is not None:
             s += self.concello.name + " - "
         if self.lugar:
-            s +=  " Parroquia: " + unicode(self.lugar.parroquia) + " Lugar: " + unicode(self.lugar.name) + " . "
+            s += " Parroquia: " + unicode(self.lugar.parroquia) + " Lugar: " + unicode(self.lugar.name) + " . "
 
-        return s + " Pol: " + str(self.poligon) + ", Parcela:" +str(self.parcela)
+        return s + " Pol: " + str(self.poligon) + ", Par:" +str(self.parcela)
 
 
 class ServizoForestalTipo(models.Model):
@@ -210,7 +210,7 @@ class Tala(models.Model):
     class Meta:
         verbose_name = "Servizo Forestal"
     def __unicode__(self):
-        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final)
+        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso)
 
 
 class TalaForm(forms.ModelForm):

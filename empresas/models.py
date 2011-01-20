@@ -69,7 +69,7 @@ class Factura(models.Model):
 
         return s
 
-    get_parcelas.short_description = u"parcelas"
+    get_parcelas.short_description = u"Servizos"
     get_parcelas.allow_tags=True
 
     def __unicode__(self):

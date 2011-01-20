@@ -73,7 +73,7 @@ class Factura(models.Model):
     get_parcelas.allow_tags=True
 
     def __unicode__(self):
-        return unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
+        return u'. ' + unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
 
 
 class DetalleFactura(models.Model):

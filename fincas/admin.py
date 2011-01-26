@@ -19,8 +19,8 @@ class ConcelloAdmin(admin.ModelAdmin):
 
 class TalaAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('finca', 'permiso', 'comezo', 'final', 'tipo','get_viaxes')
-    list_filter = ('permiso','comezo','final','tipo')
+    list_display = ('finca', 'permiso', 'comezo', 'final', 'tipo','codigoPECL','get_viaxes')
+    list_filter = ('permiso','comezo','final','tipo', 'dataPECL')
     date_hierarchy = 'comezo' 
     def get_form(self, request, obj=None, **kwargs):
         return TalaForm

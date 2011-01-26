@@ -190,7 +190,7 @@ class Tala(models.Model):
     comezo = models.DateField(blank=True)
     final = models.DateField(blank=True)
     permiso = models.DateField(blank=True)
-    codigoPECL = models.CharField(max_length=100)
+    codigoPECL = models.CharField(max_length=100, blank=True)
     dataPECL = models.DateField(blank=True)
 
     tm_permiso = models.FloatField(verbose_name=u"Pes permiso")
@@ -213,7 +213,12 @@ class Tala(models.Model):
     class Meta:
         verbose_name = "Servizo Forestal"
     def __unicode__(self):
-        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso)
+        if len(self.codigoPECL) > 0:
+            pecl = u'S'
+        else:
+            pecl = u'N'
+
+        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl
 
 
 class TalaForm(forms.ModelForm):

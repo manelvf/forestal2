@@ -187,9 +187,12 @@ class ViaxeCamion(models.Model):
     
 # Formerly Permiso Forestal
 class Tala(models.Model):
-    comezo = models.DateField()
+    comezo = models.DateField(blank=True)
     final = models.DateField(blank=True)
-    permiso = models.DateField()
+    permiso = models.DateField(blank=True)
+    codigoPECL = models.CharField(max_length=100)
+    dataPECL = models.DateField(blank=True)
+
     tm_permiso = models.FloatField(verbose_name=u"Pes permiso")
     m2_permiso = models.FloatField(verbose_name=u"m3 permiso", default=0)
     empresas = models.ManyToManyField(Empresa)

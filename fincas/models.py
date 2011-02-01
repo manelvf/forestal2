@@ -113,6 +113,7 @@ class Especie(models.Model):
 
 
 class ViaxeCamion(models.Model):
+    n_talonario = models.PositiveIntegerField(null=True, blank=True, verbose_name=u"Nº talonario")
     dia = models.DateField()
     camion = models.ForeignKey(Camion)
     tm = models.FloatField()

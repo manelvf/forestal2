@@ -1,0 +1,151 @@
+<html>
+
+<head>
+	{% for f in jsFiles %}
+		<script type="text/javascript" src="{{ f }}"></script>
+	{% endfor %}
+
+	<script type="text/javascript">
+		$(document).ready( function() {
+			$("#pasarDatos").click( function() {
+				var rc = $("#refCatastral").html();
+				var z = $("#zona").html();
+				var s = (Number($("#superficie").html())/1000.0).toFixed(4); // m3 to ha
+				var p = $("#paraje").html();
+				var i = $("#intensidad").html();
+				var c = $("#calificacion").html();
+				var u = $("#cultivo").html();
+
+				opener.$("#id_ref_catastral").val(rc);
+				opener.$("#id_zona").val(z);
+				opener.$("#id_ha_total").val(s);
+				opener.$("#id_paraje_catastral").val(p);
+				opener.$("#id_intensidad_catastral").val(i);
+				opener.$("#id_calificacion_catastral").val(c);
+				opener.$("#id_cultivo_catastral").val(u);
+
+			});
+		});
+	</script>
+
+</head>
+<body>
+	<style>
+		table {border: 1px solid black;}
+		tr td:first-child { background-color: lightpink; }
+		tr td { background-color: lightblue; }
+	</style>
+
+{% if nOfItems > 1 %}
+
+{% for f in finca.lrcdnp.rcdnp %}
+<table>
+	<tr>
+		<td>Referencia Catastral </td><td><a href="{% url forestal2.fincas.views.querycatastral provincia concello f.rc.pc1|add:f.rc.pc2|add:f.rc.car|add:f.rc.cc1|add:f.rc.cc2 %}">{{ f.rc.pc1 }}{{ f.rc.pc2 }}{{ f.rc.car }}{{ f.rc.cc1 }}{{ f.rc.cc2 }}</a></td>
+	</tr>
+		<tr>
+  <td>Codigo Provincia INE </td><td>{{ f.dt.loine.cp }}</td>
+		</tr>
+		<tr>
+  <td>Codigo Municipio INE </td><td>{{ f.dt.loine.cm }}</td>
+		</tr>
+		<tr>
+  <td>Codigo Municipio DGC </td><td>{{ f.dt.cmc }}</td>
+		</tr>
+		<tr>
+  <td>Nombre de Provincia </td><td>{{ f.dt.np }}</td>
+		</tr>
+		<tr>
+  <td>Nombre de Municipio </td><td>{{ f.dt.nm }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Zona de Concentracion</td><td> {{ f.dt.locs.lors.lorus.czc }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Poligono </td><td>{{ f.dt.locs.lors.lorus.cpp.cpo }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Parcela </td><td>{{ f.dt.locs.lors.lorus.cpp.cpa }}</td>
+		</tr>
+		<tr>
+  <td>Nombre del Paraje </td><td>{{ f.dt.locs.lors.lorus.npa }}</td>
+		</tr>
+		<tr>
+  <td>Codigo del Paraje </td><td>{{ f.dt.locs.lors.lorus.cpaj }}</td>
+		</tr>
+</table>
+<br/>
+{% endfor %}
+
+{% else %}
+
+	<table>
+		<tr>
+			<td>Numero de inmuebles</td><td>{{ finca.control.cudnp }}</td>
+		</tr>
+		<tr>
+  <td>Numero de subparcelas </td><td>{{ finca.control.cucul }}</td>
+		</tr>
+		<tr>
+  <td>Tipo de bien inmueble </td><td>{{ finca.bico.bi.idbi.cn }}</td>
+		</tr>
+		<tr>
+  <td>Referencia Catastral </td><td id="refCatastral">{{ refCatastral }}</td>
+		</tr>
+		<tr>
+  <td>Codigo Provincia INE </td><td>{{ finca.bico.bi.dt.loine.cp }}</td>
+		</tr>
+		<tr>
+  <td>Codigo Municipio INE </td><td>{{ finca.bico.bi.dt.loine.cm }}</td>
+		</tr>
+		<tr>
+  <td>Codigo Municipio DGC </td><td>{{ finca.bico.bi.dt.cmc }}</td>
+		</tr>
+		<tr>
+  <td>Nombre de Provincia </td><td>{{ finca.bico.bi.dt.np }}</td>
+		</tr>
+		<tr>
+  <td>Nombre de Municipio </td><td>{{ finca.bico.bi.dt.nm }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Zona de Concentracion</td><td id="zona"> {{ finca.bico.bi.dt.locs.lors.lorus.czc }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Poligono </td><td>{{ finca.bico.bi.dt.locs.lors.lorus.cpp.cpo }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Parcela </td><td>{{ finca.bico.bi.dt.locs.lors.lorus.cpp.cpa }}</td>
+		</tr>
+		<tr>
+  <td>Nombre del Paraje </td><td id="paraje">{{ finca.bico.bi.dt.locs.lors.lorus.npa }}</td>
+		</tr>
+		<tr>
+  <td>Codigo del Paraje </td><td>{{ finca.bico.bi.dt.locs.lors.lorus.cpaj }}</td>
+		</tr>
+		<tr>
+			<td>Datos Tributarios</td><td>{{ finca.bico.bi.ldt }} <br />{{ finca.bico.bi.debi }}</td>
+		</tr>
+		<tr>
+  <td>Codigo de Subparcela </td><td>{{ finca.bico.lspr.spr.cspr }}</td>
+		</tr>
+		<tr>
+  <td>Calificacion Catastral </td><td id="calificacion">{{ finca.bico.lspr.spr.dspr.ccc }}</td>
+		</tr>
+		<tr>
+  <td>Denominacion de la clase de cultivo </td><td id="cultivo">{{ finca.bico.lspr.spr.dspr.dcc }}</td>
+		</tr>
+		<tr>
+  <td>Intensidad productiva </td><td id="intensidad">{{ finca.bico.lspr.spr.dspr.ip }}</td>
+		</tr>
+		<tr>
+  <td>Superficie en m3 </td><td id="superficie">{{ finca.bico.lspr.spr.dspr.ssp }}</td>
+		</tr>
+	</table>
+
+	<input type="button" value="Pasar Datos" id="pasarDatos" >
+		
+{% endif %}
+
+</body>
+</html>
+

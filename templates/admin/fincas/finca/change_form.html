@@ -1,0 +1,60 @@
+{% extends "admin/change_form.html" %}
+{% load adminmedia admin_modify i18n %}
+
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+
+<input type="button" value="Consultar Parcela" id="queryland" >
+<input type="button" value="Consultar Ref. Catastral" id="querycatastral" >
+<input type="button" value="Ver en Catastro" id="vercatastro" >
+
+<script type="text/javascript">
+
+window.onload = function() {
+
+  $(document).ready( function() {
+    $("#queryland").click( function() {
+        var url = "{% url fincas.views.queryland %}";
+        var c = $("#id_concello option:selected").text().split("-");
+        var con = '/' + c[0];
+        var prov = '/' + c[1];
+        var cod_prov = c[2];
+        var pol = '/' + $("#id_poligon").val();
+        var par = '/' + $("#id_parcela").val();
+        window.open(url +prov + con+ pol + par , "queryland"+Number(new Date()), "height=500, width=300, scrollbars=yes, resizable=yes");
+    });
+
+    $("#querycatastral").click( function() {
+        var c = $("#id_concello option:selected").text().split("-");
+        var con = c[0];
+        var prov = c[1];
+        var rc = $("#id_ref_catastral").val();
+        var url = "{% url fincas.views.querycatastral prov con rc %}";
+        window.open(url + '/' + prov + '/' + con + '/' + rc, "queryland"+Number(new Date()), "height=500, width=300, scrollbars=yes, resizable=yes");
+    });
+
+    $("#vercatastro").click( function() {
+        var c = $("#id_concello option:selected").text().split("-");
+        var con = escape(c[0].toUpperCase());
+        var prov = escape(c[1].toUpperCase());
+        var cod_prov = c[2];
+        var pol = $("#id_poligon").val();
+        var par = $("#id_parcela").val();
+
+        var url = "https://www1.sedecatastro.gob.es/OVCFrames.aspx?TIPO=Catastro&pol="+pol+"&par="+par+"&prov="+cod_prov+"&DescProv="+prov+"&DescMuni="+con+"&TipUR=R&cartografia=True"
+        window.open(url, "_blank");
+
+    });
+  });
+
+}
+
+</script>
+
+<ul class="object-tools"><li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+{% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+</ul>
+
+{% endif %}{% endif %}
+{% endblock %}
+

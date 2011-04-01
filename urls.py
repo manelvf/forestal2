@@ -21,12 +21,15 @@ urlpatterns = patterns('',
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^databrowse/(.*)', databrowse.site.root),
     (r'^homogeneidade/', 'forestal2.fincas.views.homogeneidade' ),
+    (r'^queryland$', 'forestal2.fincas.views.queryland' ),
+    (r'^queryland/(.*)/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.queryland' ),
+    (r'^querycatastral/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.querycatastral' ),
     (r'listaviaxes/(?P<id>\d+)/$', 'forestal2.fincas.views.listaviaxes', {}, 'listaviaxes-views'),
 
     (r'^admin_tools/', include('admin_tools.urls')),
 
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-    {'document_root': '/home/manel/projects/forestal2/media/'}),
+    {'document_root': '/Users/manel/Sites/virtualenvs/oficina/forestal2/media'}),
 
 
     # Uncomment the next line to enable the admin:

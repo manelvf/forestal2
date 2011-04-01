@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
+
 from pprint import pprint
 import datetime
 
 from django.core import serializers
 from django.utils.encoding import smart_unicode
-
-
 from django.db import models
 from django import forms
 
@@ -17,11 +17,17 @@ class Unidade(models.Model):
     def __unicode__(self):
         return self.abrv or ""
 
+class Provincia(models.Model):
+		name = models.CharField(max_length=255, null=True, blank=True)
+		code = models.CharField(max_length=5, null=True, blank=True, default="")
+		def __unicode__(self):
+				return (unicode(self.name) + u"-" + unicode(self.code)) or ""
 
 class Concello(models.Model):
     name = models.CharField(max_length=255)
+    provincia = models.ForeignKey(Provincia, null=True, blank=True)
     def __unicode__(self):
-        return self.name or ""
+        return (self.name + u"-" + unicode(self.provincia)) or ""
 
 class Parroquia(models.Model):
     name = models.CharField(max_length=255)
@@ -66,6 +72,7 @@ class Finca(models.Model):
     monte = models.ForeignKey(Monte,blank=True,null=True)
     superficie = models.FloatField(blank=True)
     codigo_ref = models.CharField(max_length=255, default="", blank=True)
+    ref_catastral = models.CharField(max_length=255, default="", blank=True)
     obs = models.TextField(blank=True)
     modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal")
     fecha_plantacion = models.DateField(blank=True)
@@ -77,6 +84,11 @@ class Finca(models.Model):
     dono = models.ForeignKey(Empresa, related_name="finca_dono_set")
     empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set")
     unidade = models.ForeignKey(Unidade,blank=True,null=True)
+    paraje_catastral = models.CharField(max_length=255, default="", blank=True)
+    denom_catastral = models.CharField(max_length=255, default="", blank=True)
+    cultivo_catastral = models.CharField(max_length=255, default="", blank=True)
+    intensidad_catastral = models.CharField(max_length=255, default="", blank=True)
+    calificacion_catastral= models.CharField(max_length=255, default="", blank=True)
 
     class Meta:
         verbose_name = "Parcela"

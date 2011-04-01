@@ -6,13 +6,19 @@ from reversion.admin import VersionAdmin
 
 
 from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte
+from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte
 from forestal2.memento.models import Memento
+
+
 
 class FincaAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('concello', 'lugar', 'poligon', 'parcela','monte')
     list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte')
+
+
+class ProvinciaAdmin(admin.ModelAdmin):
+    pass
 
 class ConcelloAdmin(admin.ModelAdmin):
     pass
@@ -58,6 +64,7 @@ FincaAdmin.save_model = save_model
 
 admin.site.register(Finca, FincaAdmin)
 admin.site.register(Concello)
+admin.site.register(Provincia)
 admin.site.register(Parroquia)
 admin.site.register(Lugar, LugarAdmin)
 admin.site.register(ModeloForestal)

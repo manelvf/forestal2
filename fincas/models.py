@@ -92,6 +92,8 @@ class Finca(models.Model):
 
     class Meta:
         verbose_name = "Parcela"
+        unique_together = ("concello", "poligon", "parcela", "zona")
+
     def __unicode__(self):
         s = ""
         if self.concello is not None:
@@ -126,12 +128,12 @@ class Especie(models.Model):
 
 class ViaxeCamion(models.Model):
     n_talonario = models.PositiveIntegerField(null=True, blank=True, verbose_name=u"Nº talonario")
-    dia = models.DateField()
-    camion = models.ForeignKey(Camion)
-    tm = models.FloatField()
-    estereo = models.FloatField()
-    metrocubico = models.FloatField()
-    destino = models.ForeignKey(Empresa)
+    dia = models.DateField(null=True, blank=True)
+    camion = models.ForeignKey(Camion,null=True, blank=True)
+    tm = models.FloatField(null=True, blank=True)
+    estereo = models.FloatField(null=True, blank=True)
+    metrocubico = models.FloatField(null=True, blank=True)
+    destino = models.ForeignKey(Empresa, null=True, blank=True)
     origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     obs = models.TextField(blank=True)
 

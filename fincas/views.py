@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# Create your views here.
+import sys
+
 from django.http import HttpResponse
 from django.db.models import Q
 from django.template.loader import get_template
@@ -43,12 +44,16 @@ def listaviaxes(request, id):
 def queryland(request, provincia, concello, pol, par):
 		url = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?WSDL'
 
-		client = Client(url)
-
 		try:
+			client = Client(url)
 			finca = client.service.Consulta_DNPPP(provincia,concello,pol,par)
 		except WebFault,e:
-			print unicode(e)
+			return render_to_response("WDSLerror.html",
+					{"text":unicode(e)})
+		except Exception:
+			print "Unexpected error:", sys.exc_info()[0]
+			raise
+			
 
 		nOfItems = int(finca.control.cudnp)
 
@@ -64,12 +69,14 @@ def queryland(request, provincia, concello, pol, par):
 
 def querycatastral(request, provincia, concello, ref_catastral):
 		url = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?WSDL'
-		client = Client(url)
 
 		try:
+			client = Client(url)
 			finca = client.service.Consulta_DNPRC(provincia,concello,ref_catastral)
 		except WebFault,e:
-			print unicode(e)
+			return render_to_response("WDSLerror.html",
+					{"text":unicode(e)})
+
 
 		print finca
 

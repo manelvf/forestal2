@@ -13,8 +13,8 @@ from forestal2.memento.models import Memento
 
 class FincaAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('concello', 'lugar', 'poligon', 'parcela','monte')
-    list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte')
+    list_display = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
+    list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
 
 
 class ProvinciaAdmin(admin.ModelAdmin):

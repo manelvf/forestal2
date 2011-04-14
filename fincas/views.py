@@ -54,8 +54,11 @@ def queryland(request, provincia, concello, pol, par):
 			print "Unexpected error:", sys.exc_info()[0]
 			raise
 			
-
-		nOfItems = int(finca.control.cudnp)
+		try:
+			nOfItems = int(finca.control.cudnp)
+		except AttributeError:
+			return render_to_response("WDSLerror.html",
+					{"text":u"Non se atopou a parcela"})
 
 		if nOfItems == 1:
 			refCatastral = finca.bico.bi.idbi.rc.pc1 + finca.bico.bi.idbi.rc.pc2 + finca.bico.bi.idbi.rc.car + finca.bico.bi.idbi.rc.cc1 + finca.bico.bi.idbi.rc.cc2 
@@ -77,8 +80,6 @@ def querycatastral(request, provincia, concello, ref_catastral):
 			return render_to_response("WDSLerror.html",
 					{"text":unicode(e)})
 
-
-		print finca
 
 		return render_to_response("queryland.html",
 				{"finca":finca, "refCatastral":ref_catastral, "jsFiles":jsFiles, "nOfItems":1,

@@ -1,0 +1,27 @@
+table = 'empresas_camion'
+fields = ['id', 'matricula', 'empresa_id']
+#default item format: "fieldname":("type", "value")
+default = {}
+records = [
+[1L, u'nulo', 1L]
+[2L, u'4825CXH', 7L]
+[3L, u'5481CHZ', 7L]
+[4L, u'O1213AV', 6L]
+[5L, u'LU5703M', 6L]
+[6L, u'LU2723X', 6L]
+[7L, u'9330DBD', 6L]
+[8L, u'0759FBM', 6L]
+[9L, u'5166FWR', 6L]
+[10L, u'D314GLX', 1L]
+[11L, u'1620CRM', 1L]
+[12L, u'4749BXV', 1L]
+[13L, u'3228CTZ', 1L]
+[14L, u'8956DMM', 1L]
+[15L, u'8150CXT', 1L]
+[16L, u'7416DCS', 1L]
+[17L, u'6097FZZ', 1L]
+[18L, u'4766CLL', 1L]
+[19L, u'6454BVG', 1L]
+[20L, u'6590DJZ', 1L]
+[21L, u'1166BZH', 1L]
+]

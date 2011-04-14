@@ -208,9 +208,12 @@ class Tala(models.Model):
     codigoPECL = models.CharField(max_length=100, blank=True)
     dataPECL = models.DateField(blank=True)
     codigoNORFOR = models.CharField(max_length=100, blank=True, verbose_name=u"NORFOR")
+    dataPECLsaida = models.DateField(blank=True, null=True, verbose_name=u"Alb. Saida PECL")
 
     tm_permiso = models.FloatField(verbose_name=u"Pes permiso", blank=True, default=0)
     m2_permiso = models.FloatField(verbose_name=u"m3 permiso", default=0)
+    altura = models.IntegerField(default=0, null=True)
+
     empresas = models.ManyToManyField(Empresa, blank=True, null=True)
     viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     finca = models.ForeignKey(Finca)

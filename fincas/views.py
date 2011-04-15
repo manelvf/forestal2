@@ -48,15 +48,25 @@ def grid(request):
 		page = int(request.GET["page"])
 		rows = int(request.GET["rows"])
 
+		sidx = request.GET["sidx"]
+		sord = request.GET["sord"]
+
+		if sidx == 'concello' : sidx = 'finca__concello'
+		elif sidx == 'poligono' : sidx = 'finca__poligon'
+		elif sidx == 'parcela' : sidx = 'finca__parcela'
+
+		if sord=="desc":
+			sidx = "-" + sidx
+
 		start = (page-1)*rows
 		end = (page)*rows
 
-		fincas = Tala.objects.all()
+		fincas = Tala.objects.order_by(sidx)
 		total = (len(fincas)/rows) + 1
 
 		rows = []
 		for f in fincas[start:end]:
-				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,f.permiso.isoformat(), f.comezo.isoformat() ]})
+				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,f.permiso.isoformat(), f.comezo.isoformat(), f.codigoPECL ]})
 				
 		r = {
 				"total":total,

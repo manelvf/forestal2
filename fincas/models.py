@@ -199,6 +199,11 @@ class ViaxeCamion(models.Model):
         return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
 
 
+class TipoCorta(models.Model):
+		name = models.CharField(max_length=100, blank=True, verbose_name = u"Tipo de corta")
+
+class CondicionCorta(models.Model):
+		name = models.CharField(max_length=100, blank=True, verbose_name = u"Condicion")
     
 # Formerly Permiso Forestal
 class Tala(models.Model):
@@ -212,7 +217,10 @@ class Tala(models.Model):
 
     tm_permiso = models.FloatField(verbose_name=u"Pes permiso", blank=True, default=0)
     m2_permiso = models.FloatField(verbose_name=u"m3 permiso", default=0)
-    altura = models.IntegerField(default=0, null=True)
+    altura = models.IntegerField(default=0, null=True,blank=True)
+
+    tipocorta = models.ForeignKey(TipoCorta, null=True, blank=True)
+    condicions = models.ManyToManyField(CondicionCorta, blank=True, null=True)
 
     empresas = models.ManyToManyField(Empresa, blank=True, null=True)
     viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)

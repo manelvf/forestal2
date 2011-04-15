@@ -25,6 +25,10 @@ urlpatterns = patterns('',
     (r'^queryland/(.*)/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.queryland' ),
     (r'^querycatastral/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.querycatastral' ),
     (r'listaviaxes/(?P<id>\d+)/$', 'forestal2.fincas.views.listaviaxes', {}, 'listaviaxes-views'),
+    (r'assignfinca/(?P<id>\d+)/$', 'forestal2.fincas.views.assignfinca'),
+    (r'grid/(?P<id>\d+)/$', 'forestal2.fincas.views.grid'),
+    (r'grid$', 'forestal2.fincas.views.grid'),
+    (r'joinviaxefinca$', 'forestal2.fincas.views.joinviaxefinca'),
 
     (r'^admin_tools/', include('admin_tools.urls')),
 

@@ -2,11 +2,12 @@ import re
 
 from django.core import serializers
 from django.contrib import admin
+from django.contrib import databrowse
 from reversion.admin import VersionAdmin
 
 
 from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte
+from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta
 from forestal2.memento.models import Memento
 
 
@@ -75,9 +76,12 @@ admin.site.register(ViaxeCamion,ViaxeCamionAdmin)
 admin.site.register(Tala, TalaAdmin)
 admin.site.register(Unidade,UnidadeAdmin)
 admin.site.register(Monte)
+admin.site.register(TipoCorta)
 
-from django.contrib import databrowse
 
+"""
+DataBrowse
+"""
 databrowse.site.register(Finca)
 databrowse.site.register(Concello)
 databrowse.site.register(Parroquia)

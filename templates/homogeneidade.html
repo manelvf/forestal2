@@ -2,6 +2,9 @@
 
 
 <body>
+	<style>
+		.gray { background-color:lightgray; color:white; }
+	</style>
 
 <a href="{% url admin:index %}">Voltar a Administración</a>
 
@@ -11,6 +14,7 @@
 {% for item in listaCamions %}
 <tr>
     <td><a href="{% url admin:fincas_viaxecamion_change item.id %}">{{ item }}</a></td>
+    <td class="gray"><a href="{% url forestal2.fincas.views.assignfinca item.id %}" target="_blank" >Asignar</a></td>
 </tr>
 {% endfor %}
 </table>

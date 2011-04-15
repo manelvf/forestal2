@@ -105,3 +105,10 @@ class DetalleRecibo(models.Model):
     valor = models.FloatField()
     recibo = models.ForeignKey(Factura)
 
+class Talonario(models.Model):
+		recepcion = models.DateField(auto_now = True)
+		inicio = models.IntegerField(null=True)
+		fin = models.IntegerField(null=True)
+		PECL = models.BooleanField(default=True)
+		destino = models.ForeignKey(Empresa, null=True)
+

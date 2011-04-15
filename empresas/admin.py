@@ -1,5 +1,5 @@
 from django.contrib import admin
-from forestal2.empresas.models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva 
+from forestal2.empresas.models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva, Talonario 
 
 
 class EmpresaAdmin(admin.ModelAdmin):
@@ -37,6 +37,7 @@ admin.site.register(Recibo)
 admin.site.register(DetalleRecibo)
 admin.site.register(Provincia)
 admin.site.register(TipoIva)
+admin.site.register(Talonario)
 
 
 from django.contrib import databrowse

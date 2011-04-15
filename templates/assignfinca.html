@@ -1,0 +1,90 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.jqgrid.css" /> 	
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.11.custom.css" /> 	
+
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/grid.locale-gl.js" ></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jqGrid.min.js" ></script>
+		<script type="text/javascript">
+		var lastSel;
+
+		$(document).ready( function() {
+
+
+			$(function(){ 
+				$("#list").jqGrid({
+					url:'{% url forestal2.fincas.views.grid %}',
+					datatype: 'json',
+					mtype: 'GET',
+					colNames:['id','concello', 'poligono','parcela','Permiso','Comezo'],
+					colModel :[ 
+						{name:'id', index:'id', width:55}, 
+						{name:'concello', index:'concello', width:190}, 
+						{name:'poligono', index:'poligono', width:80, align:'right'}, 
+						{name:'parcela', index:'parcela', width:100, align:'right'}, 
+						{name:'permiso', index:'permiso', width:150, align:"center"}, 
+						{name:'comezo', index:'comezo', width:150, align:"center"} 
+					],
+					pager: '#pager',
+					rowNum:20,
+					rowList:[20,30],
+					sortname: 'comezo',
+					sortorder: 'desc',
+					viewrecords: true,
+					caption: 'Parcelas',
+					height: 'auto',
+
+					onSelectRow: function(id) {
+						var action = "ligar";
+						console.log(lastSel,id);
+						if (lastSel == id)
+							action="desligar";
+						else
+						 	action="ligar";
+							
+						$.get("{% url forestal2.fincas.views.joinviaxefinca %}",
+							{ idviaxe: {{ id }}, idtala: id, action: action },
+							function(data) {
+									if (data!="OK")
+										alert("Erro");
+									else if (action=="ligar") {
+										lastSel = id;
+										$("#response").html("Seleccionada finca: "+id);
+									} else {
+										$("#response").html("Ninguna finca seleccionada");
+										lastSel = false;
+									}
+
+							}
+						);
+
+					}
+				}); 
+			}); 
+					
+		});
+
+		</script>
+	</head>
+
+<body>
+	<style>
+		.gray { background-color:lightgray; color:white; }
+	</style>
+
+<a href="{% url admin:index %}">Voltar a Administración</a>
+
+<p />
+{{ viaxe }}
+<p />
+<div id="response"></div>
+<p />
+
+<table id="list"></table> 
+<div id="pager"></div> 
+
+
+
+</body>
+</html>

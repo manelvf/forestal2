@@ -18,14 +18,22 @@ class CustomIndexDashboard(Dashboard):
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
             title=_(u'Enlaces Rapidos'),
-            layout='inline',
+            layout='block',
             draggable=False,
             deletable=False,
             collapsible=False,
             children=[
                 {
-                    'title': _('Comprobar relacion entre viaxes de camion-cortas'),
-                    'url': ENV_BASE_URL + '/homogeneidade/',
+                    'title': _(u'Asignar viaxes de camion por Orixe'),
+                    'url': ENV_BASE_URL + '/homogeneidade/origin',
+                },
+                {
+                    'title': _(u'Asignar viaxes de camion por Destino'),
+                    'url': ENV_BASE_URL + '/homogeneidade/destination',
+                },
+                {
+                    'title': _(u'Ver todas as viaxes de camion'),
+                    'url': ENV_BASE_URL + '/homogeneidade/all',
                 },
                 {
                     'title': _('Change password'),

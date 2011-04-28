@@ -16,6 +16,7 @@ from suds import WebFault
 from suds.client import Client
 
 from forestal2.fincas.models import Finca, ViaxeCamion, Tala
+from forestal2.empresas.models import Empresa
 
 
 jsFiles = [settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js"]
@@ -23,17 +24,13 @@ jsFiles = [settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js"]
 """
 Check that every viaxecamion has one exactly Finca
 """
-def homogeneidade(request):
-    s = ""
+def homogeneidade(request, restriction):
 
-    v = ViaxeCamion.objects.filter( Q(origen__isnull=True) 
-                                 or Q(origen__isblank=True))
-    
-    listaCamions = v
-    s = "" #resolve("/fincas/viaxecamion")
+    if restriction == "destination":
+			empresas = Empresa.objects.all()
 
     return render_to_response("homogeneidade.html",
-        {"listaCamions":listaCamions, "s":s} )
+        locals(), context_instance = RequestContext(request) )
 
 	
 def assignfinca(request, id):
@@ -80,11 +77,61 @@ def grid(request):
 		return HttpResponse(r)
 
 
+
+"""
+Shows viaxes without origin or destination or all
+"""
+def gridviaxe(request):
+
+		page = int(request.GET["page"])
+		rows = int(request.GET["rows"])
+
+		sidx = request.GET["sidx"]
+		sord = request.GET["sord"]
+
+		restriction = request.GET["restriction"]
+
+		if sord=="desc":
+			sidx = "-" + sidx
+
+		start = (page-1)*rows
+		end = (page)*rows
+
+
+		if restriction == "origin":
+			viaxes = ViaxeCamion.objects.filter( Q(origen__isnull=True) 
+				or Q(origen__isblank=True)
+				)
+		elif restriction == "destination":
+			viaxes = ViaxeCamion.objects.filter( Q(destino__isnull=True) 
+				or Q(destino__isblank=True))
+		else:
+			viaxes = ViaxeCamion.objects.all()
+
+		total = (len(viaxes)/rows) + 1
+
+		rows = []
+		for v in viaxes[start:end]:
+				rows.append({"id":v.id,"cell":[v.pk, unicode(v.dia), unicode(v.camion), v.tm, str(v.origen), unicode(v.destino), v.n_talonario ]})
+
+
+		r = {
+				"total":total,
+				"page": page,
+				"records":len(rows),
+				"rows": rows
+				}
+
+		r = json.dumps(r)
+		return HttpResponse(r)
+
+
 def joinviaxefinca(request):
 		idviaxe = request.GET["idviaxe"]
 		idtala= request.GET["idtala"]
 		action = request.GET["action"]
 
+		return HttpResponse("OK")
 		try:
 			viaxe = ViaxeCamion.objects.get(pk=idviaxe)
 			tala = Tala.objects.get(pk=idtala)

@@ -229,9 +229,15 @@ class Tala(models.Model):
     obs = models.TextField(blank=True)
     
     def get_viaxes(self):
+        n = self.viaxecamions.exclude(camion__exact=None)
+        print n.query
         v = self.viaxecamions.all()
 
-        return u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' + unicode(len(v)) + u'</a>'
+        return unicode(u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' +
+               unicode(len(n)) + u'</a>' +
+							 u'/' +
+               u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' +
+               unicode(len(v)) + u'</a>')
 
     get_viaxes.short_description = u'N Viaxes'
     get_viaxes.allow_tags = True
@@ -245,7 +251,7 @@ class Tala(models.Model):
         else:
             pecl = u'N'
 
-        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl
+        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl + u'. NORFOR: ' + unicode(self.codigoNORFOR)
 
 
 class TalaForm(forms.ModelForm):

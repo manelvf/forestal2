@@ -230,7 +230,6 @@ class Tala(models.Model):
     
     def get_viaxes(self):
         n = self.viaxecamions.exclude(camion__exact=None)
-        print n.query
         v = self.viaxecamions.all()
 
         return unicode(u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' +

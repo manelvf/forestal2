@@ -28,7 +28,8 @@ class TalaAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('finca', 'permiso', 'comezo', 'final', 'tipo','codigoPECL','codigoNORFOR','get_viaxes','tm_permiso','m2_permiso')
     list_filter = ('permiso','comezo','final','tipo', 'dataPECL')
-    date_hierarchy = 'comezo' 
+    #date_hierarchy = 'comezo' 
+    list_per_page = 25
     def get_form(self, request, obj=None, **kwargs):
         return TalaForm
 

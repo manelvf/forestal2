@@ -153,6 +153,7 @@ def listaviaxes(request, id):
     v = ViaxeCamion.objects.filter( origen__id = id ).order_by('dia')
 
     listaCamions = v
+
     return render_to_response("homogeneidade.html",
         {"listaCamions":listaCamions, "s":s} )
 

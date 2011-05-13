@@ -167,6 +167,15 @@
 
 <p />
 
+{% if listaCamions %}
+<h3>Lista de camions</h3>
+<table>
+{% for camion in listaCamions %}
+<tr><td><a href="{% url admin:fincas_viaxecamion_change camion.pk %}">{{ camion }}</a></td></tr>	
+{% endfor %}
+</table>
+{% endif %}
+
 <table id="list2"></table> 
 <div id="pager2"></div> 
 

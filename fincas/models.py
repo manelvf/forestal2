@@ -27,7 +27,7 @@ class Concello(models.Model):
     name = models.CharField(max_length=255)
     provincia = models.ForeignKey(Provincia, null=True, blank=True)
     def __unicode__(self):
-        return (self.name + u"-" + unicode(self.provincia)) or ""
+        return (unicode(self.name) + u"-" + unicode(self.provincia)) or ""
 
 class Parroquia(models.Model):
     name = models.CharField(max_length=255)
@@ -96,12 +96,15 @@ class Finca(models.Model):
 
     def __unicode__(self):
         s = ""
+        """
         if self.concello is not None:
             s += self.concello.name + " - "
+
         if self.lugar:
             s += " Parroquia: " + unicode(self.lugar.parroquia) + " Lugar: " + unicode(self.lugar.name) + " . "
+        """
 
-        return s + " Pol: " + str(self.poligon) + ", Par:" +str(self.parcela)
+        return str(self.pk) + " Pol: " + str(self.poligon) + ", Par:" +str(self.parcela)
 
 
 class ServizoForestalTipo(models.Model):
@@ -196,7 +199,8 @@ class ViaxeCamion(models.Model):
 
 
     def __unicode__(self):
-        return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
+        #return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
+        return unicode(self.pk) + u" - " + unicode(self.dia) + " " + " - Tm: " + unicode(self.tm)
 
 
 class TipoCorta(models.Model):
@@ -250,7 +254,8 @@ class Tala(models.Model):
         else:
             pecl = u'N'
 
-        return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl + u'. NORFOR: ' + unicode(self.codigoNORFOR)
+        #return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl + u'. NORFOR: ' + unicode(self.codigoNORFOR)
+        return unicode(self.pk) + u" - " + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl + u'. NORFOR: ' + unicode(self.codigoNORFOR)
 
 
 class TalaForm(forms.ModelForm):

@@ -30,7 +30,10 @@ urlpatterns = patterns('',
     (r'grid/(?P<id>\d+)/$', 'forestal2.fincas.views.grid'),
     (r'grid$', 'forestal2.fincas.views.grid'),
     (r'gridviaxe$', 'forestal2.fincas.views.gridviaxe'),
+    (r'gridfinca$', 'forestal2.fincas.views.gridfinca'),
     (r'joinviaxefinca$', 'forestal2.fincas.views.joinviaxefinca'),
+    (r'assocfincaservizo$', 'forestal2.fincas.views.assocfincaservizo'),
+    (r'assocservizocamion$', 'forestal2.fincas.views.assocservizoviaxe'),
 
     (r'^admin_tools/', include('admin_tools.urls')),
 

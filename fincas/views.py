@@ -26,8 +26,13 @@ Check that every viaxecamion has one exactly Finca
 """
 def homogeneidade(request, restriction):
 
-    if restriction == "destination":
-			empresas = Empresa.objects.all()
+    empresas = Empresa.objects.all()
+    empresasText = ""
+    for e in empresas:
+      if str(e.tipoempresa) == "Transporte":
+        empresasText += str(e.pk) + ':' + e.name +";"
+      
+      
 
     return render_to_response("homogeneidade.html",
         locals(), context_instance = RequestContext(request) )
@@ -39,11 +44,20 @@ def assignfinca(request, id):
     return render_to_response("assignfinca.html",
         locals(), context_instance = RequestContext(request) )
 
+"""
+Grid de servizos forestais
+"""
 
 def grid(request):
 		
-		page = int(request.GET["page"])
-		rows = int(request.GET["rows"])
+		if request.GET.has_key("page"):
+				page = int(request.GET["page"])
+		else:
+				page = 0
+		if request.GET.has_key("rows"):
+				rows = int(request.GET["rows"])
+		else:
+				rows = 15
 
 		sidx = request.GET["sidx"]
 		sord = request.GET["sord"]
@@ -61,9 +75,11 @@ def grid(request):
 		fincas = Tala.objects.order_by(sidx)
 		total = (len(fincas)/rows) + 1
 
-		rows = []
+		rows = [] # result rows
+
 		for f in fincas[start:end]:
-				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,f.permiso.isoformat(), f.comezo.isoformat(), f.codigoPECL ]})
+				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,f.permiso.isoformat(), f.comezo.isoformat(), f.codigoPECL, f.codigoNORFOR ]})
+
 				
 		r = {
 				"total":total,
@@ -76,6 +92,49 @@ def grid(request):
 
 		return HttpResponse(r)
 
+
+"""
+Grid de fincas
+"""
+
+def gridfinca(request):
+		
+		if request.GET.has_key("page"):
+				page = int(request.GET["page"])
+		else:
+				page = 0
+		if request.GET.has_key("rows"):
+				rows = int(request.GET["rows"])
+		else:
+				rows = 15
+
+		sidx = request.GET["sidx"]
+		sord = request.GET["sord"]
+
+		if sord=="desc":
+			sidx = "-" + sidx
+
+		start = (page-1)*rows
+		end = (page)*rows
+
+		fincas = Finca.objects.order_by(sidx)
+		total = (len(fincas)/rows) + 1
+
+		rows = [] # result rows
+
+		for f in fincas[start:end]:
+				rows.append({"id":f.id,"cell":[f.pk,f.concello.name,f.poligon,f.parcela,f.ha_total,str(f.dono)]})
+				
+		r = {
+				"total":total,
+				"page": page,
+				"records":len(rows),
+				"rows": rows
+				}
+
+		r = json.dumps(r)
+
+		return HttpResponse(r)
 
 
 """
@@ -112,18 +171,53 @@ def gridviaxe(request):
 
 		rows = []
 		for v in viaxes[start:end]:
-				rows.append({"id":v.id,"cell":[v.pk, unicode(v.dia), unicode(v.camion), v.tm, str(v.origen), unicode(v.destino), v.n_talonario ]})
+				s = u""
+				last_origin_pk = 0
+				for o in v.origen.all():
+						s += unicode(o.finca.concello.name) + u": " + unicode(o.finca.poligon) + u"-" + unicode(o.finca.parcela)
+						last_origin_pk = o.pk
+
+				rows.append({"id":v.id,"cell":[v.pk, unicode(v.dia), unicode(v.camion), v.tm, s, unicode(v.destino), v.n_talonario, last_origin_pk ]})
 
 
 		r = {
 				"total":total,
 				"page": page,
-				"records":len(rows),
+				"records":len(viaxes),
 				"rows": rows
 				}
 
 		r = json.dumps(r)
 		return HttpResponse(r)
+
+
+"""
+	Grid WebServices
+"""
+
+def assocfincaservizo(request):
+		finca = request.GET["finca"]
+		servizo = request.GET["servizo"]
+
+		finca_obj = Finca.objects.get(pk=finca)
+		Tala.objects.filter(pk=servizo).update(finca = finca)
+
+
+		return HttpResponse("OK")
+
+
+def assocservizoviaxe(request):
+		servizo = request.GET["servizo"]
+		viaxe = request.GET["viaxe"]
+
+		vc = ViaxeCamion.objects.get(pk=viaxe)
+		for v in vc.origen.all():
+				vc.origen.remove(v)
+
+		vc.origen.add(servizo)
+
+
+		return HttpResponse("OK")
 
 
 def joinviaxefinca(request):

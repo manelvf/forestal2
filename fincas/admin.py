@@ -12,7 +12,7 @@ from forestal2.memento.models import Memento
 
 
 
-class FincaAdmin(admin.ModelAdmin):
+class FincaAdmin(VersionAdmin):
     save_as = True
     list_display = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
     list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
@@ -24,7 +24,7 @@ class ProvinciaAdmin(admin.ModelAdmin):
 class ConcelloAdmin(admin.ModelAdmin):
     pass
 
-class TalaAdmin(admin.ModelAdmin):
+class TalaAdmin(VersionAdmin):
     save_as = True
     list_display = ('finca', 'permiso', 'comezo', 'final', 'tipo','codigoPECL','codigoNORFOR','get_viaxes','tm_permiso','m2_permiso')
     list_filter = ('permiso','comezo','final','tipo', 'dataPECL')
@@ -38,7 +38,7 @@ class LugarAdmin(admin.ModelAdmin):
     list_display = ('name','parroquia','concello')
     list_filter = ('name','parroquia','concello')
 
-class ViaxeCamionAdmin(admin.ModelAdmin):
+class ViaxeCamionAdmin(VersionAdmin):
     save_as = True
     list_display = ('dia','camion','tm','destino','get_concello','get_poligon','get_parcela','get_permission','get_monte')
     list_filter = ('dia','camion','tm','destino')

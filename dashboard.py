@@ -24,15 +24,7 @@ class CustomIndexDashboard(Dashboard):
             collapsible=False,
             children=[
                 {
-                    'title': _(u'Asignar viaxes de camion por Orixe'),
-                    'url': ENV_BASE_URL + '/homogeneidade/origin',
-                },
-                {
-                    'title': _(u'Asignar viaxes de camion por Destino'),
-                    'url': ENV_BASE_URL + '/homogeneidade/destination',
-                },
-                {
-                    'title': _(u'Ver todas as viaxes de camion'),
+                    'title': _(u'Asociar Viaxes de Camion'),
                     'url': ENV_BASE_URL + '/homogeneidade/all',
                 },
                 {

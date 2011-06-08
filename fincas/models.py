@@ -214,6 +214,7 @@ class Tala(models.Model):
     comezo = models.DateField(blank=True)
     final = models.DateField(blank=True)
     permiso = models.DateField(blank=True)
+    entradaGrupo = models.DateField(blank=True)
     codigoPECL = models.CharField(max_length=100, blank=True)
     dataPECL = models.DateField(blank=True)
     codigoNORFOR = models.CharField(max_length=100, blank=True, verbose_name=u"NORFOR")

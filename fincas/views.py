@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import resolve
 from django.conf import settings
 from django.core import serializers
+from django.utils.html import escape
 
 from suds import WebFault
 from suds.client import Client
@@ -72,12 +73,16 @@ def grid(request):
 		start = (page-1)*rows
 		end = (page)*rows
 
-		fincas = Tala.objects.order_by(sidx)
-		total = (len(fincas)/rows) + 1
+		if request.GET["_search"] == "true":
+				talas = gridSearch(request,Tala,sidx)
+		else:
+				talas = Tala.objects.order_by(sidx)
+
+		total = (len(talas)/rows) + 1
 
 		rows = [] # result rows
 
-		for f in fincas[start:end]:
+		for f in talas[start:end]:
 				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,f.permiso.isoformat(), f.comezo.isoformat(), f.codigoPECL, f.codigoNORFOR ]})
 
 				
@@ -117,7 +122,12 @@ def gridfinca(request):
 		start = (page-1)*rows
 		end = (page)*rows
 
-		fincas = Finca.objects.order_by(sidx)
+		# is search?
+		if request.GET["_search"] == "true":
+				fincas = gridSearch(request, Finca, sidx)
+		else:
+				fincas = Finca.objects.order_by(sidx)
+
 		total = (len(fincas)/rows) + 1
 
 		rows = [] # result rows
@@ -156,8 +166,10 @@ def gridviaxe(request):
 		start = (page-1)*rows
 		end = (page)*rows
 
-
-		if restriction == "origin":
+		# is search?
+		if request.GET["_search"] == "true":
+				viaxes = gridSearch(request, ViaxeCamion)
+		elif restriction == "origin":
 			viaxes = ViaxeCamion.objects.filter( Q(origen__isnull=True) 
 				or Q(origen__isblank=True)
 				)
@@ -166,6 +178,8 @@ def gridviaxe(request):
 				or Q(destino__isblank=True))
 		else:
 			viaxes = ViaxeCamion.objects.all()
+
+		viaxes = viaxes.order_by(sidx)
 
 		total = (len(viaxes)/rows) + 1
 
@@ -194,6 +208,36 @@ def gridviaxe(request):
 """
 	Grid WebServices
 """
+
+def gridSearch(request, model, sidx=None): 
+
+		filters = json.loads(request.GET["filters"])
+		
+		query_filters = []
+		for r in filters["rules"]:
+				try:
+						d = float(r["data"])
+						d = unicode(d)
+				except ValueError:
+						d = "'" + escape(r["data"]) + "'"	
+
+				if r["op"] == "eq":
+						query_filters.append('Q(' + r["field"] + u"=" + d + ')')
+				else :
+						query_filters.append('Q(' + r["field"] + u"__" + r["op"] + u"=" + d + ')')
+
+		objs = model.objects.all()
+
+		if filters["groupOp"] == "OR":
+				objs = eval("objs.filter(" + " | ".join(query_filters) + ")")
+		else:
+				objs = eval("objs.filter(" + ", ".join(query_filters) + ")")
+
+		if sidx:
+				objs = objs.order_by(sidx)
+		
+		return objs
+
 
 def assocfincaservizo(request):
 		finca = request.GET["finca"]

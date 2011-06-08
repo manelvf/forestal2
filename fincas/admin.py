@@ -26,8 +26,8 @@ class ConcelloAdmin(admin.ModelAdmin):
 
 class TalaAdmin(VersionAdmin):
     save_as = True
-    list_display = ('finca', 'permiso', 'comezo', 'final', 'tipo','codigoPECL','codigoNORFOR','get_viaxes','tm_permiso','m2_permiso')
-    list_filter = ('permiso','comezo','final','tipo', 'dataPECL')
+    list_display = ('finca', 'entradaGrupo', 'permiso', 'comezo', 'final', 'tipo','codigoPECL','codigoNORFOR','get_viaxes','tm_permiso','m2_permiso')
+    list_filter = ('permiso','entradaGrupo','comezo','final','tipo', 'dataPECL')
     #date_hierarchy = 'comezo' 
     list_per_page = 25
     def get_form(self, request, obj=None, **kwargs):

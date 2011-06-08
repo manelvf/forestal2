@@ -34,16 +34,16 @@ $(document).ready(function () {
             }, {
                 name: 'dia',
                 index: 'dia',
-                width: 150
+                width: 100
             }, {
                 name: 'camion',
                 index: 'camion',
-                width: 80,
+                width: 140,
                 align: 'right'
             }, {
                 name: 'tm',
                 index: 'tm',
-                width: 90,
+                width: 70,
                 align: 'right'
             }, {
                 name: 'origen',
@@ -139,34 +139,39 @@ $(document).ready(function () {
                 $("#" + subgrid_table_id).jqGrid({
                     url: '{% url forestal2.fincas.views.grid %}',
                     datatype: "json",
-                    colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'CodigoPECL', 'NORFOR'],
+                    colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
                     colModel: [{
                         name: 'id',
                         index: 'id',
-                        width: 55
+                        width: 50
                     }, {
                         name: 'concello',
                         index: 'concello',
-                        width: 120
+                        width: 100
                     }, {
                         name: 'poligono',
                         index: 'poligono',
-                        width: 60,
+                        width: 45,
                         align: 'right'
                     }, {
                         name: 'parcela',
                         index: 'parcela',
-                        width: 90,
+                        width: 70,
                         align: 'right'
                     }, {
                         name: 'permiso',
                         index: 'permiso',
-                        width: 130,
+                        width: 105,
                         align: "center"
                     }, {
                         name: 'comezo',
                         index: 'comezo',
-                        width: 130,
+                        width: 105,
+                        align: "center"
+                    }, {
+                        name: 'entradaGrupo',
+                        index: 'entradaGrupo',
+                        width: 105,
                         align: "center"
                     }, {
                         name: 'codigoPECL',
@@ -234,7 +239,7 @@ $(document).ready(function () {
                         $("#" + subgrid_table_id2).jqGrid({
                             url: '{% url forestal2.fincas.views.gridfinca %}',
                             datatype: "json",
-                            colNames: ['id', 'concello', 'poligono', 'parcela', 'superficie', 'dono'],
+                            colNames: ['id', 'concello', 'zona', 'poligono', 'parcela', 'superficie', 'dono'],
                             colModel: [{
                                 name: 'id',
                                 index: 'id',
@@ -243,6 +248,11 @@ $(document).ready(function () {
                                 name: 'concello',
                                 index: 'concello',
                                 width: 120
+                            }, {
+                                name: 'zona',
+                                index: 'zona',
+                                width: 60,
+                                align: 'right'
                             }, {
                                 name: 'poligono',
                                 index: 'poligon',
@@ -293,9 +303,7 @@ $(document).ready(function () {
                             caption: "Asoc. Finca",
                             title: "Asociar Finca a Servizo Forestal",
                             onClickButton: changeFinca
-                        }).jqGrid('searchGrid', {
-                            multipleSearch: true
-                        });;
+                        });
                     },
                 });
                 jQuery("#" + subgrid_table_id).jqGrid('navGrid', "#" + pager_id, {

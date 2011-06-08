@@ -83,7 +83,19 @@ def grid(request):
 		rows = [] # result rows
 
 		for f in talas[start:end]:
-				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,f.permiso.isoformat(), f.comezo.isoformat(), f.codigoPECL, f.codigoNORFOR ]})
+				try:
+						p = f.permiso.isoformat()
+				except AttributeError:
+						p = ""
+				try:
+						c = f.comezo.isoformat()
+				except AttributeError:
+						c = ""
+				try:
+						e = f.comezo.isoformat()
+				except AttributeError:
+						e = ""
+				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,p,c,e, f.codigoPECL, f.codigoNORFOR ]})
 
 				
 		r = {
@@ -133,7 +145,7 @@ def gridfinca(request):
 		rows = [] # result rows
 
 		for f in fincas[start:end]:
-				rows.append({"id":f.id,"cell":[f.pk,f.concello.name,f.poligon,f.parcela,f.ha_total,str(f.dono)]})
+				rows.append({"id":f.id,"cell":[f.pk,f.concello.name,f.zona,f.poligon,f.parcela,f.ha_total,str(f.dono)]})
 				
 		r = {
 				"total":total,

@@ -22,8 +22,9 @@ from forestal2.empresas.models import Empresa
 
 jsFiles = [settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js"]
 
+
 """
-Check that every viaxecamion has one exactly Finca
+viaxes grid view
 """
 def homogeneidade(request, restriction):
 
@@ -39,11 +40,21 @@ def homogeneidade(request, restriction):
         locals(), context_instance = RequestContext(request) )
 
 	
+"""
+servizos grid view
+"""
+def servizogridview(request):
+
+    return render_to_response("servizogridview.html",
+        locals(), context_instance = RequestContext(request) )
+
+
 def assignfinca(request, id):
     viaxe = ViaxeCamion.objects.get(pk=id)
 
     return render_to_response("assignfinca.html",
         locals(), context_instance = RequestContext(request) )
+
 
 """
 Grid de servizos forestais
@@ -82,6 +93,9 @@ def grid(request):
 
 		rows = [] # result rows
 
+		"""
+		Assign permiso, comezo, entradaGrupo
+		"""
 		for f in talas[start:end]:
 				try:
 						p = f.permiso.isoformat()
@@ -92,9 +106,11 @@ def grid(request):
 				except AttributeError:
 						c = ""
 				try:
-						e = f.comezo.isoformat()
+						e = f.entradaGrupo.isoformat()
 				except AttributeError:
 						e = ""
+
+
 				rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,p,c,e, f.codigoPECL, f.codigoNORFOR ]})
 
 				
@@ -162,7 +178,7 @@ def gridfinca(request):
 """
 Shows viaxes without origin or destination or all
 """
-def gridviaxe(request):
+def gridviaxe(request, servizo=None):
 
 		page = int(request.GET["page"])
 		rows = int(request.GET["rows"])
@@ -178,8 +194,9 @@ def gridviaxe(request):
 		start = (page-1)*rows
 		end = (page)*rows
 
-		# is search?
-		if request.GET["_search"] == "true":
+		if servizo is not None:
+				viaxes = ViaxeCamion.objects.filter(origen__pk = servizo)	
+		elif request.GET["_search"] == "true":     # is search?
 				viaxes = gridSearch(request, ViaxeCamion)
 		elif restriction == "origin":
 			viaxes = ViaxeCamion.objects.filter( Q(origen__isnull=True) 
@@ -203,7 +220,11 @@ def gridviaxe(request):
 						s += unicode(o.finca.concello.name) + u": " + unicode(o.finca.poligon) + u"-" + unicode(o.finca.parcela)
 						last_origin_pk = o.pk
 
-				rows.append({"id":v.id,"cell":[v.pk, unicode(v.dia), unicode(v.camion), v.tm, s, unicode(v.destino), v.n_talonario, last_origin_pk ]})
+				if len(v.obs) > 0:
+						obs = "S"
+				else:
+						obs = ""
+				rows.append({"id":v.id,"cell":[v.pk, unicode(v.dia), unicode(v.camion), v.tm, s, unicode(v.destino), v.n_talonario, obs, last_origin_pk]})
 
 
 		r = {
@@ -220,6 +241,9 @@ def gridviaxe(request):
 """
 	Grid WebServices
 """
+
+def gridservizo(request):
+		pass
 
 def gridSearch(request, model, sidx=None): 
 
@@ -276,6 +300,18 @@ def assocservizoviaxe(request):
 		return HttpResponse("OK")
 
 
+def desassocviaxeservizo(request):
+		servizo = request.GET["servizo"]
+		viaxe = request.GET["viaxe"]
+
+		vc = ViaxeCamion.objects.get(pk=viaxe)
+		for v in vc.origen.all():
+				vc.origen.remove(v)
+
+
+		return HttpResponse("OK")
+
+
 def joinviaxefinca(request):
 		idviaxe = request.GET["idviaxe"]
 		idtala= request.GET["idtala"]
@@ -306,6 +342,7 @@ def listaviaxes(request, id):
 
     return render_to_response("homogeneidade.html",
         {"listaCamions":listaCamions, "s":s} )
+
 
 
 def queryland(request, provincia, concello, pol, par):

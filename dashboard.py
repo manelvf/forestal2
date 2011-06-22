@@ -28,6 +28,18 @@ class CustomIndexDashboard(Dashboard):
                     'url': ENV_BASE_URL + '/homogeneidade/all',
                 },
                 {
+                    'title': _(u'Asociar Servizos Forestais - Talas'),
+                    'url': ENV_BASE_URL + '/servizogridview',
+                },
+                {
+                    'title': _(u'Asociar Facturas'),
+                    'url': ENV_BASE_URL + '/facturagridview',
+                },
+                {
+                    'title': _(u'Backup'),
+                    'url': ENV_BASE_URL + '/backup',
+                },
+                {
                     'title': _('Change password'),
                     'url': reverse('admin:password_change'),
                 },

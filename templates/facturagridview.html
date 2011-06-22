@@ -1,0 +1,254 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.jqgrid.css" /> 	
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.11.custom.css" /> 	
+
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/grid.locale-gl.js" ></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jqGrid.min.js" ></script>
+		<script type="text/javascript">
+
+		
+$(document).ready(function () {
+
+    var caption = $("#caption");
+    var caption2 = $("#caption2");
+
+    // Grid Viaxes
+    var selectedViaxe = false;
+    var selectedFinca = false;
+
+    $(function () {
+        /************************************************************
+         1st GRID - Servizos Forestais
+         ************************************************************/
+        $("#list2").jqGrid({
+            url: '{% url forestal2.fincas.views.grid %}',
+            datatype: "json",
+            colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
+            colModel: [{
+                name: 'id',
+                index: 'id',
+                width: 50
+            }, {
+                name: 'concello',
+                index: 'concello',
+                width: 100
+            }, {
+                name: 'poligono',
+                index: 'poligono',
+                width: 45,
+                align: 'right'
+            }, {
+                name: 'parcela',
+                index: 'parcela',
+                width: 70,
+                align: 'right'
+            }, {
+                name: 'permiso',
+                index: 'permiso',
+                width: 105,
+                align: "center"
+            }, {
+                name: 'comezo',
+                index: 'comezo',
+                width: 105,
+                align: "center"
+            }, {
+                name: 'entradaGrupo',
+                index: 'entradaGrupo',
+                width: 105,
+                align: "center"
+            }, {
+                name: 'codigoPECL',
+                index: 'codigoPECL',
+                width: 140,
+                align: "center"
+            }, {
+                name: 'NORFOR',
+                index: 'codigoNORFOR',
+                width: 75,
+                align: "center"
+            }],
+            caption: "Servizos Forestais - Orixe",
+            height: "auto",
+            rowNum: 15,
+            sortname: 'id',
+            sortorder: "asc",
+            pager: '#pager2'
+            //postData:{id:$('table#'+subgrid_table_id+' tbody tr#'+row_id+' td[aria-describedby=list2_id_origen]').html()},
+                  //editUrl: "server.php",
+
+        }).jqGrid('navGrid', '#pager2', {
+            'add': true,
+            'edit': true,
+            'del': false,
+            'search': true,
+            editfunc: function () {
+                var selrow = $("#list2").getGridParam("selrow");
+                var editUrl = '{% url admin:fincas_tala_change 0 %}'.replace('0', selrow);
+                window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
+            },
+            addfunc: function () {
+                var addUrl = '{% url admin:fincas_tala_add %}';
+                window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
+            }
+        }, {}, {}, {}, {
+            multipleSearch: true
+        });
+
+
+        /*********
+         Facturas Grid
+         +********/
+
+
+				// Grid fincas
+				{% if restriction == "origin" %}
+
+				$("#list").jqGrid({
+					url:'{% url forestal2.fincas.views.grid %}',
+					datatype: 'json',
+					mtype: 'GET',
+					colNames:['id','concello', 'poligono','parcela','Permiso','Comezo','Codigo'],
+					colModel :[ 
+						{name:'id', index:'id', width:55}, 
+						{name:'concello', index:'concello', width:150}, 
+						{name:'poligono', index:'poligono', width:80, align:'right'}, 
+						{name:'parcela', index:'parcela', width:90, align:'right'}, 
+						{name:'permiso', index:'permiso', width:140, align:"center"}, 
+						{name:'comezo', index:'comezo', width:140, align:"center"},
+						{name:'codigoPECL', index:'codigoPECL', width:140, align:"center"} 
+					],
+					pager: '#pager',
+					rowNum:20,
+					rowList:[20,30],
+					sortname: 'comezo',
+					sortorder: 'asc',
+					viewrecords: true,
+					caption: 'Talas',
+					height: 'auto',
+
+					beforeSelectRow: function(id) {
+
+						if (id == selectedFinca) {
+							selectedFinca= false;
+							caption2.html("Finca Non Seleccionada.");
+						} else {
+							selectedFinca= id;
+							caption2.html("Finca "+id+" Seleccionada.");
+						}
+						checkFincaViaxe();
+						return true;
+
+					}
+        }).jqGrid('searchGrid', {multipleSearch:true})
+        .navGrid('#pager', {'add':false, 'edit':false, 'del':false, 'search':false}); 
+
+				{% else %}
+
+				{% endif %}
+
+
+			}); 
+
+			$("#associate").click( function() {
+					ligar();
+			});
+
+			function checkFincaViaxe() {
+				if (selectedFinca && selectedViaxe) {
+					$("#associate").css("visibility","visible");
+					return true;
+				} else {
+					$("#associate").css("visibility","hidden");
+					return false;
+				}
+			}
+
+
+			function ligar() {
+				if (!checkFincaViaxe()) {
+					alert("Selecciona 1 finca e 1 viaxe de camion");
+					return;
+				}
+
+				action = "ligar";
+
+				$.get("{% url forestal2.fincas.views.joinviaxefinca %}",
+					{ idviaxe: selectedViaxe, idtala: selectedFinca, action: action },
+					function(data) {
+							if (data!="OK")
+								alert("Erro");
+							else if (action=="ligar") {
+								$("#list2").trigger("reloadGrid");
+							} else {
+								$("#response").html("Ninguna finca seleccionada");
+								lastSel = false;
+							}
+
+					}
+				);
+
+			}
+					
+		});
+
+
+		</script>
+	</head>
+
+<body>
+
+<style>
+	.gray { background-color:lightgray; color:white; }
+	#associate {visibility:hidden; padding-top:15px; }
+	#associateCompany {visibility:hidden; padding-top:15px; }
+	#caption, #caption2 {padding:8px;}
+</style>
+
+<center>
+	
+<a href="{% url admin:index %}">Voltar a Administración</a>
+
+<p />
+
+{% if listaCamions %}
+<h3>Lista de camions</h3>
+<table>
+{% for camion in listaCamions %}
+<tr><td><a href="{% url admin:fincas_viaxecamion_change camion.pk %}">{{ camion }}</a></td></tr>	
+{% endfor %}
+</table>
+{% endif %}
+
+<table id="list2"></table> 
+<div id="pager2"></div> 
+
+<div id="caption" ></div>
+
+{% if restriction == "origin" %}
+
+<table id="list"></table> 
+<div id="pager"></div> 
+
+{% else %}{% if restriction == "destination" %}
+
+<select id="companySelect">
+	{% for empresa in empresas %}
+	<option value="{{ empresa.pk }}" >{{ empresa }}</option>
+	{% endfor %}
+</select>
+<input type="button" value="Asociar" id="associateCompany" />
+
+{% endif %}
+{% endif %}
+
+<div id="caption2" ></div>
+
+<input type="button" value="Asociar" id="associate" />
+
+</center>
+
+</body>
+</html>

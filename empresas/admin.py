@@ -24,7 +24,13 @@ class FacturaAdmin(admin.ModelAdmin):
     inlines = [
         DetalleTabularAdmin,
     ]
-    
+
+
+class TalonarioAdmin(admin.ModelAdmin):
+    save_as = True
+    list_display = ('recepcion', 'inicio', 'fin', 'PECL', 'destino')
+    list_filter = ('recepcion', 'inicio', 'fin', 'PECL', 'destino')
+
 
 admin.site.register(TipoEmpresa)
 admin.site.register(Empresa, EmpresaAdmin)
@@ -37,7 +43,7 @@ admin.site.register(Recibo)
 admin.site.register(DetalleRecibo)
 admin.site.register(Provincia)
 admin.site.register(TipoIva)
-admin.site.register(Talonario)
+admin.site.register(Talonario, TalonarioAdmin)
 
 
 from django.contrib import databrowse

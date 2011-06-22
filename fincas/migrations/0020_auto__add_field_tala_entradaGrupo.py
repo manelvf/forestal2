@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Tala.entradaGrupo'
-        db.add_column('fincas_tala', 'entradaGrupo', self.gf('django.db.models.fields.DateField')(default='', blank=True), keep_default=False)
+        db.add_column('fincas_tala', 'entradaGrupo', self.gf('django.db.models.fields.DateField')(blank=True), keep_default=False)
 
 
     def backwards(self, orm):

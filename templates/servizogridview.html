@@ -20,105 +20,90 @@ $(document).ready(function () {
 
     $(function () {
         /************************************************************
-         1st GRID
+         1st GRID - Servizos Forestais
          ************************************************************/
         $("#list2").jqGrid({
-            url: '{% url forestal2.fincas.views.gridviaxe %}',
-            datatype: 'json',
-            mtype: 'GET',
-            colNames: ['id', 'dia', 'camion', 'tm', 'origen', 'destino', 'n_talonario', 'obs','id_origen'],
+            url: '{% url forestal2.fincas.views.grid %}',
+            datatype: "json",
+            colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
             colModel: [{
                 name: 'id',
                 index: 'id',
-                width: 55
+                width: 50
             }, {
-                name: 'dia',
-                index: 'dia',
+                name: 'concello',
+                index: 'concello',
                 width: 100
             }, {
-                name: 'camion',
-                index: 'camion',
-                width: 140,
+                name: 'poligono',
+                index: 'poligono',
+                width: 45,
                 align: 'right'
             }, {
-                name: 'tm',
-                index: 'tm',
+                name: 'parcela',
+                index: 'parcela',
                 width: 70,
                 align: 'right'
             }, {
-                name: 'origen',
-                index: 'origen',
-                width: 190,
+                name: 'permiso',
+                index: 'permiso',
+                width: 105,
                 align: "center"
             }, {
-                name: 'destino',
-                index: 'destino',
-                width: 150,
-                align: "center"//,
-                //editable: true,
-                //edittype: "select",
-                //editoptions: {
-                //    value: "{{ empresasText }}"
-                //}
-            }, {
-                name: 'n_talonario',
-                index: 'n_talonario',
-                width: 120,
+                name: 'comezo',
+                index: 'comezo',
+                width: 105,
                 align: "center"
             }, {
-                name: 'obs',
-                index: 'obs',
-                width: 35,
+                name: 'entradaGrupo',
+                index: 'entradaGrupo',
+                width: 105,
                 align: "center"
-            },
-
-            // hidden
-            {
-                name: 'id_origen',
-                index: 'id_origen',
-                width: 20,
-                hidden: true
-            }
-
-            ],
+            }, {
+                name: 'codigoPECL',
+                index: 'codigoPECL',
+                width: 140,
+                align: "center"
+            }, {
+                name: 'NORFOR',
+                index: 'codigoNORFOR',
+                width: 75,
+                align: "center"
+            }],
+            caption: "Servizos Forestais - Orixe",
+            height: "auto",
+            rowNum: 15,
+            sortname: 'id',
+            sortorder: "asc",
             pager: '#pager2',
-            rowNum: 20,
-            rowList: [20, 30],
-            sortname: 'dia',
-            sortorder: 'desc',
-            viewrecords: true,
-            caption: 'Viaxes de Camion',
-            height: 'auto',
-            postData: {
-                'restriction': '{{ restriction }}'
-            },
-            //editurl: "server.php",
+            //postData:{id:$('table#'+subgrid_table_id+' tbody tr#'+row_id+' td[aria-describedby=list2_id_origen]').html()},
+                  //editUrl: "server.php",
 
             subGrid: true,
-            subGridUrl: '{% url forestal2.fincas.views.grid %}',
+            subGridUrl: '{% url forestal2.fincas.views.gridviaxe %}',
 
             subGridRowExpanded: function (subgrid_id, row_id) {
                 /************************************************************
-                 2nd GRID - Servizos forestais
+                 2nd GRID - Viaxes de Camion
                   ************************************************************/
                 var subgrid_table_id;
                 var pager_id;
 
-                function changeOrigin() {
+                function changeViaxe() {
                     var selrow2 = $("#" + subgrid_table_id).getGridParam("selrow");
                     if (isNaN(selrow2) || selrow2 == null) {
-                        alert("Seleccionar fila de servizo");
+                        alert("Seleccionar fila de viaxe camion");
                         return false;
                     }
 
-                    var r = confirm("Asociar viaxe " + row_id + " con servizo " + selrow2 + " ?")
+                    var r = confirm("Dessociar servizo " + row_id + " con viaxe " + selrow2 + " ?")
                     if (r) {
 
                         $.ajax({
-                            url: '{% url forestal2.fincas.views.assocservizoviaxe %}',
+                            url: '{% url forestal2.fincas.views.desassocviaxeservizo%}',
                             data: {
-                                servizo: selrow2,
-                                viaxe: row_id
+                                servizo: row_id,
+                                viaxe: selrow2 
                             },
                             dataType: "text",
                             error: function (e) {
@@ -128,7 +113,7 @@ $(document).ready(function () {
                                 if (data == "OK") {
                                     $("#list2").trigger("reloadGrid");
                                 } else {
-                                    alert("Erro asociando filas (server)");
+                                    alert("Erro desasociando filas (server)");
                                 }
                             }
                         });
@@ -142,67 +127,84 @@ $(document).ready(function () {
                 pager_id = "p_" + subgrid_table_id;
                 $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
                 $("#" + subgrid_table_id).jqGrid({
-                    url: '{% url forestal2.fincas.views.grid %}',
-                    datatype: "json",
-                    colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
+                    url: '{% url forestal2.fincas.views.gridviaxe %}' + '/' + row_id,
+                    datatype: 'json',
+                    mtype: 'GET',
+                    colNames: ['id', 'dia', 'camion', 'tm', 'origen', 'destino', 'n_talonario', 'obs','id_origen'],
                     colModel: [{
                         name: 'id',
                         index: 'id',
-                        width: 50
+                        width: 55
                     }, {
-                        name: 'concello',
-                        index: 'concello',
+                        name: 'dia',
+                        index: 'dia',
                         width: 100
                     }, {
-                        name: 'poligono',
-                        index: 'poligono',
-                        width: 45,
+                        name: 'camion',
+                        index: 'camion',
+                        width: 140,
                         align: 'right'
                     }, {
-                        name: 'parcela',
-                        index: 'parcela',
+                        name: 'tm',
+                        index: 'tm',
                         width: 70,
                         align: 'right'
                     }, {
-                        name: 'permiso',
-                        index: 'permiso',
-                        width: 105,
+                        name: 'origen',
+                        index: 'origen',
+                        width: 190,
                         align: "center"
                     }, {
-                        name: 'comezo',
-                        index: 'comezo',
-                        width: 105,
+                        name: 'destino',
+                        index: 'destino',
+                        width: 150,
+                        align: "center"//,
+                        //editable: true,
+                        //edittype: "select",
+                        //editoptions: {
+                        //    value: "{{ empresasText }}"
+                        //}
+                    }, {
+                        name: 'n_talonario',
+                        index: 'n_talonario',
+                        width: 120,
                         align: "center"
                     }, {
-                        name: 'entradaGrupo',
-                        index: 'entradaGrupo',
-                        width: 105,
+                        name: 'obs',
+                        index: 'obs',
+                        width: 35,
                         align: "center"
-                    }, {
-                        name: 'codigoPECL',
-                        index: 'codigoPECL',
-                        width: 140,
-                        align: "center"
-                    }, {
-                        name: 'NORFOR',
-                        index: 'codigoNORFOR',
-                        width: 75,
-                        align: "center"
-                    }],
-                    caption: "Servizos Forestais - Orixe",
-                    height: "auto",
-                    rowNum: 15,
-                    sortname: 'id',
-                    sortorder: "asc",
+                    },
+
+                    // hidden
+                    {
+                        name: 'id_origen',
+                        index: 'id_origen',
+                        width: 20,
+                        hidden: true
+                    }
+
+                    ],
                     pager: pager_id,
-                    //postData:{id:$('table#'+subgrid_table_id+' tbody tr#'+row_id+' td[aria-describedby=list2_id_origen]').html()},
-                    editUrl: "server.php",
+                    rowNum: 20,
+                    rowList: [20, 30],
+                    sortname: 'dia',
+                    sortorder: 'desc',
+                    viewrecords: true,
+                    caption: 'Viaxes de Camion',
+                    height: 'auto',
+                    postData: {
+                        'restriction': '{{ restriction }}'
+                    },
+                    //editurl: "server.php",
+                        /*
+
                     subGrid: true,
 
                     subGridRowExpanded: function (subgrid_id2, row_id2) {
                         /************************************************************
                          3rd GRID
-                         ************************************************************/
+                         ***********************************************************
                         var subgrid_table_id2;
                         var pager_id2;
 
@@ -310,6 +312,7 @@ $(document).ready(function () {
                             onClickButton: changeFinca
                         });
                     },
+                    */
                 });
                 jQuery("#" + subgrid_table_id).jqGrid('navGrid', "#" + pager_id, {
                     edit: true,
@@ -318,19 +321,19 @@ $(document).ready(function () {
                     search: true,
                     editfunc: function () {
                         var selrow = $("#" + subgrid_table_id).getGridParam("selrow");
-                        var editUrl = '{% url admin:fincas_tala_change 0 %}'.replace('0', selrow);
+                        var editUrl = '{% url admin:fincas_viaxecamion_change 0 %}'.replace('0', selrow);
                         window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
                     },
                     addfunc: function () {
-                        var addUrl = '{% url admin:fincas_tala_add %}';
+                        var addUrl = '{% url admin:fincas_viaxecamion_add %}';
                         window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
                     }
                 }, {}, {}, {}, {
                     multipleSearch: true
                 }).jqGrid('navButtonAdd', "#" + pager_id, {
-                    caption: "Asoc. Orixe",
-                    title: "Asociar Orixe a Camion",
-                    onClickButton: changeOrigin
+                    caption: "Desasoc. Viaxe",
+                    title: "Desasociar Viaxe a Servizo",
+                    onClickButton: changeViaxe
                 });
 
             },
@@ -350,11 +353,11 @@ $(document).ready(function () {
             'search': true,
             editfunc: function () {
                 var selrow = $("#list2").getGridParam("selrow");
-                var editUrl = '{% url admin:fincas_viaxecamion_change 0 %}'.replace('0', selrow);
+                var editUrl = '{% url admin:fincas_tala_change 0 %}'.replace('0', selrow);
                 window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
             },
             addfunc: function () {
-                var addUrl = '{% url admin:fincas_viaxecamion_add %}';
+                var addUrl = '{% url admin:fincas_tala_add %}';
                 window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
             }
         }, {}, {}, {}, {

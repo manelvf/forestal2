@@ -42,7 +42,8 @@ urlpatterns = patterns('',
 
     (r'^facturagridview$', 'forestal2.empresas.views.facturagridview' ),
     (r'gridfactura$', 'forestal2.empresas.views.gridfactura'),
-
+    (r'griddetallefactura$', 'forestal2.empresas.views.griddetallefactura'),
+    (r'griddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.griddetallefactura'),
 
     (r'^backup$', 'forestal2.empresas.views.backup'),
 

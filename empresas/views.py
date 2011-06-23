@@ -16,16 +16,16 @@ from django.core.urlresolvers import resolve
 from django.conf import settings
 from django.core import serializers
 
-from forestal2.empresas.models import Empresa
+from forestal2.empresas.models import Empresa, Factura, DetalleFactura
 from forestal2 import settings
 
 
 def EmpresaSelect(request):
-		
-		empresas = Empresa.objects.all()
-		r = json.dumps(empresas)
+    
+    empresas = Empresa.objects.all()
+    r = json.dumps(empresas)
 
-		return HttpResponse(r)
+    return HttpResponse(r)
 
 
 def facturagridview(request):
@@ -34,8 +34,54 @@ def facturagridview(request):
 
 
 def gridfactura(request):
-    pass
 
+    if request.GET.has_key("page"):
+        page = int(request.GET["page"])
+    else:
+        page = 0
+    if request.GET.has_key("rows"):
+        rows = int(request.GET["rows"])
+    else:
+        rows = 15
+
+    sidx = request.GET["sidx"]
+    sord = request.GET["sord"]
+
+    if sord=="desc":
+      sidx = "-" + sidx
+
+    start = (page-1)*rows
+    end = (page)*rows
+
+    """
+    # is search?
+    if request.GET["_search"] == "true":
+        fincas = gridSearch(request, Finca, sidx)
+    else:
+        fincas = Finca.objects.order_by(sidx)
+    """
+    facturas = Factura.objects.order_by(sidx)
+
+    total = (len(facturas)/rows) + 1
+
+    rows = [] # result rows
+
+    for f in facturas[start:end]:
+        rows.append({"id":f.id,"cell":[f.pk,str(f.empresa),str(f.cliente),str(f.tipo),str(f.numero),str(f.emision)]})
+        
+    r = {
+        "total":total,
+        "page": page,
+        "records":len(rows),
+        "rows": rows
+        }
+
+    r = json.dumps(r)
+
+    return HttpResponse(r)
+
+def griddetallefactura(request,id):
+    pass
 
 def backup(request):
     try:

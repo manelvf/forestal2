@@ -18,79 +18,145 @@ $(document).ready(function () {
     var selectedViaxe = false;
     var selectedFinca = false;
 
+
+    /*********
+     Facturas Grid
+     +********/
+
     $(function () {
         /************************************************************
-         1st GRID - Servizos Forestais
+         1st GRID - Bottom - Servizos Forestais
          ************************************************************/
         $("#list2").jqGrid({
-            url: '{% url forestal2.fincas.views.grid %}',
+            url: '{% url forestal2.empresas.views.gridfactura %}',
             datatype: "json",
-            colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
+            colNames: ['id', 'empresa', 'cliente', 'tipo', 'numero', 'emision'],
             colModel: [{
                 name: 'id',
                 index: 'id',
                 width: 50
             }, {
-                name: 'concello',
-                index: 'concello',
-                width: 100
+                name: 'empresa',
+                index: 'empresa',
+                width: 200
             }, {
-                name: 'poligono',
-                index: 'poligono',
-                width: 45,
+                name: 'cliente',
+                index: 'cliente',
+                width: 200,
+            }, {
+                name: 'tipo',
+                index: 'tipo',
+                width: 150,
                 align: 'right'
             }, {
-                name: 'parcela',
-                index: 'parcela',
-                width: 70,
-                align: 'right'
-            }, {
-                name: 'permiso',
-                index: 'permiso',
-                width: 105,
+                name: 'numero',
+                index: '',
+                width: 90,
                 align: "center"
             }, {
-                name: 'comezo',
-                index: 'comezo',
-                width: 105,
-                align: "center"
-            }, {
-                name: 'entradaGrupo',
-                index: 'entradaGrupo',
-                width: 105,
-                align: "center"
-            }, {
-                name: 'codigoPECL',
-                index: 'codigoPECL',
-                width: 140,
-                align: "center"
-            }, {
-                name: 'NORFOR',
-                index: 'codigoNORFOR',
-                width: 75,
+                name: 'emision',
+                index: 'emision',
+                width: 100,
                 align: "center"
             }],
-            caption: "Servizos Forestais - Orixe",
+            caption: "Facturas",
             height: "auto",
             rowNum: 15,
             sortname: 'id',
             sortorder: "asc",
-            pager: '#pager2'
+            pager: '#pager2',
             //postData:{id:$('table#'+subgrid_table_id+' tbody tr#'+row_id+' td[aria-describedby=list2_id_origen]').html()},
                   //editUrl: "server.php",
 
-        }).jqGrid('navGrid', '#pager2', {
+            subGrid: true,
+            subGridUrl: '{% url forestal2.empresas.views.griddetallefactura %}',
+
+            subGridRowExpanded: function (subgrid_id, row_id) {
+                /************************************************************
+                 2nd GRID - Detalle Factura
+                  ************************************************************/
+                var subgrid_table_id;
+                var pager_id;
+
+                subgrid_table_id = subgrid_id + "_t";
+                pager_id = "p_" + subgrid_table_id;
+                $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
+                $("#" + subgrid_table_id).jqGrid({
+                    url: '{% url forestal2.empresas.views.griddetallefactura %}/' + row_id,
+                    datatype: "json",
+                    colNames: ['id', 'servizo', 'concepto', 'tipo_iva', 'tipo_irpf', 'cantidad', 'valor'],
+                    colModel: [{
+                        name: 'id',
+                        index: 'id',
+                        width: 50
+                    }, {
+                        name: 'servizo',
+                        index: 'servizo',
+                        width: 100
+                    }, {
+                        name: 'concepto',
+                        index: 'concepto',
+                        width: 100,
+                        align: 'right'
+                    }, {
+                        name: 'tipo_iva',
+                        index: 'tipo_iva',
+                        width: 40,
+                        align: 'right'
+                    }, {
+                        name: 'tipo_irpf',
+                        index: 'tipo_irpf',
+                        width: 40,
+                        align: "center"
+                    }, {
+                        name: 'cantidad',
+                        index: 'cantidad',
+                        width: 80,
+                        align: "center"
+                    }, {
+                        name: 'valor',
+                        index: 'valor',
+                        width: 75,
+                        align: "center"
+                    }],
+                    caption: "Detalle",
+                    height: "auto",
+                    rowNum: 15,
+                    sortname: 'id',
+                    sortorder: "asc",
+                    pager: pager_id
+              })
+              .jqGrid('navGrid', '#pager2', {
+                  'add': true,
+                  'edit': true,
+                  'del': false,
+                  'search': true,
+                  editfunc: function () {
+                      var selrow = $("#list2").getGridParam("selrow");
+                      var editUrl = '{% url admin:empresas_detallefactura_change 0 %}'.replace('0', selrow);
+                      window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
+                  },
+                  addfunc: function () {
+                      var addUrl = '{% url admin:empresas_detallefactura_add %}';
+                      window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
+                  }
+              }, {}, {}, {}, {
+                  multipleSearch: true
+              });
+          }
+        })
+        .jqGrid('navGrid', '#pager2', {
             'add': true,
             'edit': true,
             'del': false,
             'search': true,
             editfunc: function () {
                 var selrow = $("#list2").getGridParam("selrow");
-                var editUrl = '{% url admin:fincas_tala_change 0 %}'.replace('0', selrow);
+                var editUrl = '{% url admin:empresas_factura_change 0 %}'.replace('0', selrow);
                 window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
             },
             addfunc: function () {
-                var addUrl = '{% url admin:fincas_tala_add %}';
+                var addUrl = '{% url admin:empresas_factura_add %}';
                 window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
             }
         }, {}, {}, {}, {
@@ -98,102 +164,65 @@ $(document).ready(function () {
         });
 
 
-        /*********
-         Facturas Grid
-         +********/
+      function asocServizoDetalle() {
+      }
 
 
-				// Grid fincas
-				{% if restriction == "origin" %}
+        /***************
+          3rd GRID
+          *************/
 
-				$("#list").jqGrid({
-					url:'{% url forestal2.fincas.views.grid %}',
-					datatype: 'json',
-					mtype: 'GET',
-					colNames:['id','concello', 'poligono','parcela','Permiso','Comezo','Codigo'],
-					colModel :[ 
-						{name:'id', index:'id', width:55}, 
-						{name:'concello', index:'concello', width:150}, 
-						{name:'poligono', index:'poligono', width:80, align:'right'}, 
-						{name:'parcela', index:'parcela', width:90, align:'right'}, 
-						{name:'permiso', index:'permiso', width:140, align:"center"}, 
-						{name:'comezo', index:'comezo', width:140, align:"center"},
-						{name:'codigoPECL', index:'codigoPECL', width:140, align:"center"} 
-					],
-					pager: '#pager',
-					rowNum:20,
-					rowList:[20,30],
-					sortname: 'comezo',
-					sortorder: 'asc',
-					viewrecords: true,
-					caption: 'Talas',
-					height: 'auto',
+      $("#list").jqGrid({
+        url:'{% url forestal2.fincas.views.grid %}',
+        datatype: 'json',
+        mtype: 'GET',
+        colNames:['id','concello', 'poligono','parcela','Permiso','Comezo','Codigo'],
+        colModel :[ 
+          {name:'id', index:'id', width:55}, 
+          {name:'concello', index:'concello', width:150}, 
+          {name:'poligono', index:'poligono', width:80, align:'right'}, 
+          {name:'parcela', index:'parcela', width:90, align:'right'}, 
+          {name:'permiso', index:'permiso', width:140, align:"center"}, 
+          {name:'comezo', index:'comezo', width:140, align:"center"},
+          {name:'codigoPECL', index:'codigoPECL', width:140, align:"center"} 
+        ],
+        pager: '#pager',
+        rowNum:20,
+        rowList:[20,30],
+        sortname: 'comezo',
+        sortorder: 'asc',
+        //viewrecords: true,
+        caption: 'Servizos',
+        height: 'auto',
 
-					beforeSelectRow: function(id) {
+        beforeSelectRow: function(id) {
 
-						if (id == selectedFinca) {
-							selectedFinca= false;
-							caption2.html("Finca Non Seleccionada.");
-						} else {
-							selectedFinca= id;
-							caption2.html("Finca "+id+" Seleccionada.");
-						}
-						checkFincaViaxe();
-						return true;
+          if (id == selectedFinca) {
+            selectedFinca= false;
+            caption2.html("Finca Non Seleccionada.");
+          } else {
+            selectedFinca= id;
+            caption2.html("Finca "+id+" Seleccionada.");
+          }
+          return true;
 
-					}
-        }).jqGrid('searchGrid', {multipleSearch:true})
-        .navGrid('#pager', {'add':false, 'edit':false, 'del':false, 'search':false}); 
+        }
 
-				{% else %}
+      })
+      .navGrid('#pager', {'add':false, 'edit':false, 'del':false, 'search':true
+        }, {}, {}, {}, {
+      multipleSearch: true
+      })
+      .jqGrid('navButtonAdd', '#pager', {
+                            caption: "Asoc. a Detalle",
+                            title: "Asociar Tala a linea de Detalle",
+                            onClickButton: asocServizoDetalle
+                        });
 
-				{% endif %}
-
-
-			}); 
-
-			$("#associate").click( function() {
-					ligar();
-			});
-
-			function checkFincaViaxe() {
-				if (selectedFinca && selectedViaxe) {
-					$("#associate").css("visibility","visible");
-					return true;
-				} else {
-					$("#associate").css("visibility","hidden");
-					return false;
-				}
-			}
+      }); 
 
 
-			function ligar() {
-				if (!checkFincaViaxe()) {
-					alert("Selecciona 1 finca e 1 viaxe de camion");
-					return;
-				}
-
-				action = "ligar";
-
-				$.get("{% url forestal2.fincas.views.joinviaxefinca %}",
-					{ idviaxe: selectedViaxe, idtala: selectedFinca, action: action },
-					function(data) {
-							if (data!="OK")
-								alert("Erro");
-							else if (action=="ligar") {
-								$("#list2").trigger("reloadGrid");
-							} else {
-								$("#response").html("Ninguna finca seleccionada");
-								lastSel = false;
-							}
-
-					}
-				);
-
-			}
-					
 		});
-
 
 		</script>
 	</head>
@@ -209,44 +238,21 @@ $(document).ready(function () {
 
 <center>
 	
-<a href="{% url admin:index %}">Voltar a Administración</a>
+<a href="{% url admin:index %}">Administración</a>
 
 <p />
-
-{% if listaCamions %}
-<h3>Lista de camions</h3>
-<table>
-{% for camion in listaCamions %}
-<tr><td><a href="{% url admin:fincas_viaxecamion_change camion.pk %}">{{ camion }}</a></td></tr>	
-{% endfor %}
-</table>
-{% endif %}
 
 <table id="list2"></table> 
 <div id="pager2"></div> 
 
-<div id="caption" ></div>
-
-{% if restriction == "origin" %}
+<div id="caption2" ></div>
 
 <table id="list"></table> 
 <div id="pager"></div> 
 
-{% else %}{% if restriction == "destination" %}
+<div id="caption" ></div>
 
-<select id="companySelect">
-	{% for empresa in empresas %}
-	<option value="{{ empresa.pk }}" >{{ empresa }}</option>
-	{% endfor %}
-</select>
-<input type="button" value="Asociar" id="associateCompany" />
 
-{% endif %}
-{% endif %}
-
-<div id="caption2" ></div>
-
-<input type="button" value="Asociar" id="associate" />
 
 </center>
 

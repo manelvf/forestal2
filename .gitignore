@@ -2,5 +2,7 @@ settings.py
 *.pyc
 *.sw*
 *.json
+.backup
+oficina
 
 

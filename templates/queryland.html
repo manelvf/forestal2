@@ -10,7 +10,7 @@
 			$("#pasarDatos").click( function() {
 				var rc = $("#refCatastral").html();
 				var z = $("#zona").html();
-				var s = (Number($("#superficie").html())/1000.0).toFixed(4); // m3 to ha
+				var s = (Number($("#superficie").html())/10000.0).toFixed(4); // m3 to ha
 				var p = $("#paraje").html();
 				var i = $("#intensidad").html();
 				var c = $("#calificacion").html();
@@ -18,7 +18,7 @@
 
 				opener.$("#id_ref_catastral").val(rc);
 				opener.$("#id_zona").val(z);
-				opener.$("#id_ha_total").val(s);
+				opener.$("#id_ha_total").val(Number(s));
 				opener.$("#id_paraje_catastral").val(p);
 				opener.$("#id_intensidad_catastral").val(i);
 				opener.$("#id_calificacion_catastral").val(c);

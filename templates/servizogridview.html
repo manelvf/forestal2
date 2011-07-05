@@ -25,7 +25,7 @@ $(document).ready(function () {
         $("#list2").jqGrid({
             url: '{% url forestal2.fincas.views.grid %}',
             datatype: "json",
-            colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
+            colNames: ['id', 'concello', 'poligono', 'parcela', 'm2_permiso','Permiso', 'Comezo', 'entradaGrupo', 'dataPECLsaida', 'CodigoPECL', 'NORFOR'],
             colModel: [{
                 name: 'id',
                 index: 'id',
@@ -45,6 +45,11 @@ $(document).ready(function () {
                 width: 70,
                 align: 'right'
             }, {
+                name: 'm2_permiso',
+                index: 'm2_permiso',
+                width: 70,
+                align: 'right'
+            }, {
                 name: 'permiso',
                 index: 'permiso',
                 width: 105,
@@ -57,6 +62,11 @@ $(document).ready(function () {
             }, {
                 name: 'entradaGrupo',
                 index: 'entradaGrupo',
+                width: 105,
+                align: "center"
+            }, {
+                name: 'dataPECLsaida',
+                index: 'dataPECLsaida',
                 width: 105,
                 align: "center"
             }, {
@@ -122,10 +132,45 @@ $(document).ready(function () {
 
                 }
 
+                function exportViaxes()
+                {   
+                    var list = $("#" + subgrid_table_id)
+                    var mya=new Array();
+                    mya=list.getDataIDs();  // Get All IDs
+                    var data=list.getRowData(mya[0]);     // Get First row to get the labels
+                    var colNames=new Array(); 
+                    var ii=0;
+                    for (var i in data){colNames[ii++]=i;}    // capture col names
+                    var html="<table>";
+                    for(i=0;i<mya.length;i++)
+                        {
+                        data=list.getRowData(mya[i]); // get each row
+                        html+="<tr>";
+                        for(j=0;j<colNames.length;j++)
+                            {
+                              html=html+'<td>'+data[colNames[j]]+"</td>"+"\t"; // output each column as tab delimited
+                            }
+                        html=html+"</tr>\n";  // output each row with end of line
 
-                subgrid_table_id = subgrid_id + "_t";
-                pager_id = "p_" + subgrid_table_id;
-                $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
+                        }
+                    html=html+"</table>\n";  // end of line at the end
+
+                    var w = window.open("","Export "+Number(new Date),"location=1,status=1,width=500,height=500");
+                    w.document.body.innerHTML = html;
+
+                    /*
+                    document.forms[0].csvBuffer.value=html;
+                    document.forms[0].method='POST';
+                    document.forms[0].action='csvExport.php';  // send it to server which will open this contents in excel file
+                    document.forms[0].target='_blank';
+                    document.forms[0].submit();
+                    */
+                }
+                
+
+                  subgrid_table_id = subgrid_id + "_t";
+                  pager_id = "p_" + subgrid_table_id;
+                  $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
                 $("#" + subgrid_table_id).jqGrid({
                     url: '{% url forestal2.fincas.views.gridviaxe %}' + '/' + row_id,
                     datatype: 'json',
@@ -142,7 +187,7 @@ $(document).ready(function () {
                     }, {
                         name: 'camion',
                         index: 'camion',
-                        width: 140,
+                        width: 220,
                         align: 'right'
                     }, {
                         name: 'tm',
@@ -195,7 +240,8 @@ $(document).ready(function () {
                     height: 'auto',
                     postData: {
                         'restriction': '{{ restriction }}'
-                    },
+                    }
+                    
                     //editurl: "server.php",
                         /*
 
@@ -330,11 +376,17 @@ $(document).ready(function () {
                     }
                 }, {}, {}, {}, {
                     multipleSearch: true
-                }).jqGrid('navButtonAdd', "#" + pager_id, {
+                    })
+                .jqGrid('navButtonAdd', "#" + pager_id, {
                     caption: "Desasoc. Viaxe",
                     title: "Desasociar Viaxe a Servizo",
                     onClickButton: changeViaxe
-                });
+                    })
+                .jqGrid('navButtonAdd', "#" + pager_id, {
+                    caption: "Exportar",
+                    title: "Exportar a OpenOffice/Excel",
+                    onClickButton: exportViaxes
+                    });
 
             },
 

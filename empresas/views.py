@@ -93,3 +93,10 @@ def backup(request):
     return HttpResponse(str(r) + "<p>Proceso completado")
 
 
+"""
+  Spreadsheet export
+"""
+def exportgrid(request):
+    print str(request.POST)
+    return HttpResponse("")
+

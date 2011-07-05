@@ -45,6 +45,8 @@ urlpatterns = patterns('',
     (r'griddetallefactura$', 'forestal2.empresas.views.griddetallefactura'),
     (r'griddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.griddetallefactura'),
 
+    (r'exportGrid$', 'forestal2.empresas.views.exportgrid'),
+
     (r'^backup$', 'forestal2.empresas.views.backup'),
 
     (r'^admin_tools/', include('admin_tools.urls')),

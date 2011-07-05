@@ -109,9 +109,13 @@ def grid(request):
             e = f.entradaGrupo.isoformat()
         except AttributeError:
             e = ""
+        try:
+            s = f.dataPECLsaida.isoformat()
+        except AttributeError:
+            s = ""
 
 
-        rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,p,c,e, f.codigoPECL, f.codigoNORFOR ]})
+        rows.append({"id":f.id,"cell":[f.pk,f.finca.concello.name,f.finca.poligon,f.finca.parcela,str(f.m2_permiso),p,c,e,s, f.codigoPECL, f.codigoNORFOR ]})
 
         
     r = {

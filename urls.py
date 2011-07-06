@@ -44,6 +44,9 @@ urlpatterns = patterns('',
     (r'gridfactura$', 'forestal2.empresas.views.gridfactura'),
     (r'griddetallefactura$', 'forestal2.empresas.views.griddetallefactura'),
     (r'griddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.griddetallefactura'),
+    (r'adddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.adddetallefactura'),
+    (r'adddetallefactura$', 'forestal2.empresas.views.adddetallefactura'),
+
 
     (r'exportGrid$', 'forestal2.empresas.views.exportgrid'),
 

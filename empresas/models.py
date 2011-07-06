@@ -79,11 +79,11 @@ class Factura(models.Model):
 class DetalleFactura(models.Model):
     #finca = models.ForeignKey("fincas.Finca", blank=True, null=True)
     servizo = models.ForeignKey("fincas.Tala", blank=True, null=True)
-    concepto = models.CharField(max_length=255)
-    tipo_iva = models.ForeignKey("TipoIva",null=True, related_name="tipo_iva_set")
-    tipo_irpf = models.ForeignKey("TipoIva", null=True, related_name="tipo_irpf_set")
-    cantidad = models.FloatField()
-    valor = models.FloatField()
+    concepto = models.CharField(max_length=255, blank=True)
+    tipo_iva = models.ForeignKey("TipoIva",null=True, related_name="tipo_iva_set", blank=True)
+    tipo_irpf = models.ForeignKey("TipoIva", null=True, related_name="tipo_irpf_set", blank=True)
+    cantidad = models.FloatField(blank=True)
+    valor = models.FloatField(blank=True)
     factura = models.ForeignKey(Factura)
     def __unicode__(self):
         return unicode(self.servizo) + u" - " + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)

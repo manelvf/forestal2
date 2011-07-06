@@ -9,12 +9,11 @@ import subprocess
 from django.http import HttpResponse
 from django.db.models import Q
 from django.template.loader import get_template
-from django.template import Context
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.template import Context, RequestContext
+from django.shortcuts import render_to_response, redirect
 from django.core.urlresolvers import resolve
 from django.conf import settings
-from django.core import serializers
+from django.core import serializers, urlresolvers
 
 from forestal2.empresas.models import Empresa, Factura, DetalleFactura
 from forestal2 import settings
@@ -80,8 +79,28 @@ def gridfactura(request):
 
     return HttpResponse(r)
 
+
 def griddetallefactura(request,id):
-    pass
+    r=""
+    return HttpResponse(r)
+
+
+"""
+  Never use empty 'factura' id
+"""
+def adddetallefactura(request, id=None):
+    if id is None:
+        return HttpResponse("Detalle Factura mush have a factura id")
+
+    factura = Factura.objects.get(pk=id)
+    df = DetalleFactura(factura=factura)
+    df.save()
+    return redirect(urlresolvers.reverse('admin:empresas_detallefactura_change', args=(df.id,)))
+
+
+"""
+  Related functions
+"""
 
 def backup(request):
     try:

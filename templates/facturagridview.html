@@ -6,6 +6,11 @@
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script>
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/grid.locale-gl.js" ></script>
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jqGrid.min.js" ></script>
+
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/facturaGridConf.js" ></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/detalleFacturaGridConf.js" ></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}js/servizoGridConf.js" ></script>
+
 		<script type="text/javascript">
 
 		
@@ -24,109 +29,29 @@ $(document).ready(function () {
      +********/
 
     $(function () {
-        /************************************************************
-         1st GRID - Bottom - Servizos Forestais
-         ************************************************************/
-        $("#list2").jqGrid({
-            url: '{% url forestal2.empresas.views.gridfactura %}',
-            datatype: "json",
-            colNames: ['id', 'empresa', 'cliente', 'tipo', 'numero', 'emision'],
-            colModel: [{
-                name: 'id',
-                index: 'id',
-                width: 50
-            }, {
-                name: 'empresa',
-                index: 'empresa',
-                width: 200
-            }, {
-                name: 'cliente',
-                index: 'cliente',
-                width: 200,
-            }, {
-                name: 'tipo',
-                index: 'tipo',
-                width: 150,
-                align: 'right'
-            }, {
-                name: 'numero',
-                index: '',
-                width: 90,
-                align: "center"
-            }, {
-                name: 'emision',
-                index: 'emision',
-                width: 100,
-                align: "center"
-            }],
-            caption: "Facturas",
-            height: "auto",
-            rowNum: 15,
-            sortname: 'id',
-            sortorder: "asc",
-            pager: '#pager2',
-            //postData:{id:$('table#'+subgrid_table_id+' tbody tr#'+row_id+' td[aria-describedby=list2_id_origen]').html()},
-                  //editUrl: "server.php",
+          /************************************************************
+           3rd GRID - Servizos Forestais
+            ************************************************************/
 
-            subGrid: true,
-            subGridUrl: '{% url forestal2.empresas.views.griddetallefactura %}',
+          /************************************************************
+           2nd GRID - Detalle Factura
+            ************************************************************/
+          var detalleFacturaSubGrid = function (subgrid_id, row_id) {
+              var subgrid_table_id;
+              var pager_id;
 
-            subGridRowExpanded: function (subgrid_id, row_id) {
-                /************************************************************
-                 2nd GRID - Detalle Factura
-                  ************************************************************/
-                var subgrid_table_id;
-                var pager_id;
+              subgrid_table_id = subgrid_id + "_t";
+              pager_id = "p_" + subgrid_table_id;
 
-                subgrid_table_id = subgrid_id + "_t";
-                pager_id = "p_" + subgrid_table_id;
-                $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
-                $("#" + subgrid_table_id).jqGrid({
-                    url: '{% url forestal2.empresas.views.griddetallefactura %}/' + row_id,
-                    datatype: "json",
-                    colNames: ['id', 'servizo', 'concepto', 'tipo_iva', 'tipo_irpf', 'cantidad', 'valor'],
-                    colModel: [{
-                        name: 'id',
-                        index: 'id',
-                        width: 50
-                    }, {
-                        name: 'servizo',
-                        index: 'servizo',
-                        width: 100
-                    }, {
-                        name: 'concepto',
-                        index: 'concepto',
-                        width: 100,
-                        align: 'right'
-                    }, {
-                        name: 'tipo_iva',
-                        index: 'tipo_iva',
-                        width: 40,
-                        align: 'right'
-                    }, {
-                        name: 'tipo_irpf',
-                        index: 'tipo_irpf',
-                        width: 40,
-                        align: "center"
-                    }, {
-                        name: 'cantidad',
-                        index: 'cantidad',
-                        width: 80,
-                        align: "center"
-                    }, {
-                        name: 'valor',
-                        index: 'valor',
-                        width: 75,
-                        align: "center"
-                    }],
-                    caption: "Detalle",
-                    height: "auto",
-                    rowNum: 15,
-                    sortname: 'id',
-                    sortorder: "asc",
-                    pager: pager_id
-              })
-              .jqGrid('navGrid', '#pager2', {
+              $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
+
+              $.extend(detalleFacturaGridConf, {
+                  url: '{% url forestal2.empresas.views.griddetallefactura %}/' + row_id,
+                  pager: pager_id
+              });
+
+              $("#" + subgrid_table_id).jqGrid(detalleFacturaGridConf)
+              .jqGrid('navGrid', '#'+pager_id, {
                   'add': true,
                   'edit': true,
                   'del': false,
@@ -137,14 +62,25 @@ $(document).ready(function () {
                       window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
                   },
                   addfunc: function () {
-                      var addUrl = '{% url admin:empresas_detallefactura_add %}';
+                      var addUrl = '{% url forestal2.empresas.views.adddetallefactura %}' + '/'+ row_id;
                       window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
                   }
               }, {}, {}, {}, {
                   multipleSearch: true
               });
-          }
-        })
+        }
+
+        /************************************************************
+         1st GRID - Factura
+         ************************************************************/
+        $.extend(facturaGridConf, {
+            url: '{% url forestal2.empresas.views.gridfactura %}',
+            subGrid: true,
+            subGridUrl: '{% url forestal2.empresas.views.griddetallefactura %}',
+            subGridRowExpanded: detalleFacturaSubGrid
+        });
+
+        $("#list2").jqGrid(facturaGridConf)
         .jqGrid('navGrid', '#pager2', {
             'add': true,
             'edit': true,
@@ -164,37 +100,11 @@ $(document).ready(function () {
         });
 
 
-      function asocServizoDetalle() {
-      }
-
-
         /***************
           3rd GRID
           *************/
 
-      $("#list").jqGrid({
-        url:'{% url forestal2.fincas.views.grid %}',
-        datatype: 'json',
-        mtype: 'GET',
-        colNames:['id','concello', 'poligon','parcela','Permiso','Comezo','Codigo'],
-        colModel :[ 
-          {name:'id', index:'id', width:55}, 
-          {name:'concello', index:'concello', width:150}, 
-          {name:'poligon', index:'poligon', width:80, align:'right'}, 
-          {name:'parcela', index:'parcela', width:90, align:'right'}, 
-          {name:'permiso', index:'permiso', width:140, align:"center"}, 
-          {name:'comezo', index:'comezo', width:140, align:"center"},
-          {name:'codigoPECL', index:'codigoPECL', width:140, align:"center"} 
-        ],
-        pager: '#pager',
-        rowNum:20,
-        rowList:[20,30],
-        sortname: 'comezo',
-        sortorder: 'asc',
-        //viewrecords: true,
-        caption: 'Servizos',
-        height: 'auto',
-
+      $.extend(servizoGridConf, {
         beforeSelectRow: function(id) {
 
           if (id == selectedFinca) {
@@ -207,8 +117,9 @@ $(document).ready(function () {
           return true;
 
         }
+      });
 
-      })
+      $("#list").jqGrid(servizoGridConf)
       .navGrid('#pager', {'add':false, 'edit':false, 'del':false, 'search':true
         }, {}, {}, {}, {
       multipleSearch: true
@@ -221,6 +132,8 @@ $(document).ready(function () {
 
       }); 
 
+      var asocServizoDetalle = function() {
+      }
 
 		});
 

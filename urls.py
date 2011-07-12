@@ -1,5 +1,6 @@
 # test lines
 # for git
+import settings
 from django.conf.urls.defaults import *
 from django.contrib import databrowse
 
@@ -28,6 +29,7 @@ urlpatterns = patterns('',
     (r'listaviaxes/(?P<id>\d+)/$', 'forestal2.fincas.views.listaviaxes', {}, 'listaviaxes-views'),
     (r'assignfinca/(?P<id>\d+)/$', 'forestal2.fincas.views.assignfinca'),
     (r'grid/(?P<id>\d+)/$', 'forestal2.fincas.views.grid'),
+    (r'grid/$', 'forestal2.fincas.views.grid'),
     (r'grid$', 'forestal2.fincas.views.grid'),
     (r'gridviaxe$', 'forestal2.fincas.views.gridviaxe'),
     (r'gridviaxe/(?P<servizo>\d+)/$', 'forestal2.fincas.views.gridviaxe'),
@@ -46,6 +48,7 @@ urlpatterns = patterns('',
     (r'griddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.griddetallefactura'),
     (r'adddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.adddetallefactura'),
     (r'adddetallefactura$', 'forestal2.empresas.views.adddetallefactura'),
+    (r'assocservizodetalle$', 'forestal2.empresas.views.assocservizodetalle'),
 
 
     (r'exportGrid$', 'forestal2.empresas.views.exportgrid'),
@@ -55,7 +58,7 @@ urlpatterns = patterns('',
     (r'^admin_tools/', include('admin_tools.urls')),
 
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-    {'document_root': '/Users/manel/Sites/virtualenvs/oficina/forestal2/media'}),
+    {'document_root': settings.DOCUMENT_ROOT}),
 
 
     # Uncomment the next line to enable the admin:

@@ -16,6 +16,7 @@ from django.conf import settings
 from django.core import serializers, urlresolvers
 
 from forestal2.empresas.models import Empresa, Factura, DetalleFactura
+from forestal2.fincas.models import Tala
 from forestal2 import settings
 
 
@@ -81,7 +82,49 @@ def gridfactura(request):
 
 
 def griddetallefactura(request,id):
-    r=""
+    if request.GET.has_key("page"):
+        page = int(request.GET["page"])
+    else:
+        page = 0
+    if request.GET.has_key("rows"):
+        rows = int(request.GET["rows"])
+    else:
+        rows = 15
+
+    sidx = request.GET["sidx"]
+    sord = request.GET["sord"]
+
+    if sord=="desc":
+      sidx = "-" + sidx
+
+    start = (page-1)*rows
+    end = (page)*rows
+
+    """
+    # is search?
+    if request.GET["_search"] == "true":
+        fincas = gridSearch(request, Finca, sidx)
+    else:
+        fincas = Finca.objects.order_by(sidx)
+    """
+    detallefacturas = DetalleFactura.objects.filter(factura=id).order_by(sidx)
+
+    total = (len(detallefacturas)/rows) + 1
+
+    rows = [] # result rows
+
+    for f in detallefacturas[start:end]:
+        rows.append({"id":f.id,"cell":[f.pk,str(f.servizo),str(f.concepto),str(f.tipo_iva),str(f.tipo_irpf),str(f.cantidad),str(f.valor)]})
+        
+    r = {
+        "total":total,
+        "page": page,
+        "records":len(rows),
+        "rows": rows
+        }
+
+    r = json.dumps(r)
+
     return HttpResponse(r)
 
 
@@ -95,7 +138,21 @@ def adddetallefactura(request, id=None):
     factura = Factura.objects.get(pk=id)
     df = DetalleFactura(factura=factura)
     df.save()
-    return redirect(urlresolvers.reverse('admin:empresas_detallefactura_change', args=(df.id,)))
+    return HttpResponse("OK")
+    #return redirect(urlresolvers.reverse('admin:empresas_detallefactura_change', args=(df.id,)))
+
+
+"""
+  Servizo forestal to Detalle Factura association
+"""
+def assocservizodetalle(request):
+    detalle = request.GET["detalle"]
+    servizo = request.GET["servizo"]
+
+    servizoObj = Tala.objects.get(pk=servizo)
+    DetalleFactura.objects.filter(pk=detalle).update(servizo=servizoObj)
+
+    return HttpResponse("OK")
 
 
 """

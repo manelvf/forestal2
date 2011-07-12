@@ -16,6 +16,10 @@
 		
 $(document).ready(function () {
 
+    /******
+      Grids
+      ******/
+
     var caption = $("#caption");
     var caption2 = $("#caption2");
 
@@ -24,14 +28,62 @@ $(document).ready(function () {
     var selectedFinca = false;
 
 
-    /*********
-     Facturas Grid
-     +********/
+        /************************************************************
+         3rd GRID - Servizos Forestais
+          ************************************************************/
 
-    $(function () {
-          /************************************************************
-           3rd GRID - Servizos Forestais
-            ************************************************************/
+        var servizoSubgrid = function (subgrid_id, row_id) {
+            var subgrid_table_id;
+            var pager_id;
+
+            subgrid_table_id = subgrid_id + "_t2";
+            pager_id = "p2_" + subgrid_table_id;
+
+            $("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'></table><div id='" + pager_id + "' class='scroll'></div>");
+
+
+            $.extend(servizoGridConf, {
+                url: '{% url forestal2.fincas.views.grid %}',
+                pager: '#'+pager_id
+            });
+
+            $("#" + subgrid_table_id).jqGrid(servizoGridConf)
+            .navGrid('#'+pager_id, {'add':false, 'edit':false, 'del':false, 'search':true
+              }, {}, {}, {}, {
+            multipleSearch: true
+            })
+            .jqGrid('navButtonAdd', '#'+pager_id, {
+                                  caption: "Asoc. a Detalle",
+                                  title: "Asociar Tala a linea de Detalle",
+                                  onClickButton: function(e) {
+                                      var selrow = $("#" + subgrid_table_id).getGridParam("selrow");
+                                      if (selrow)
+                                          asocServizoDetalle(row_id, selrow);
+                                  }
+                              });
+
+            var asocServizoDetalle = function(row_id, selrow) {
+              $.ajax({
+                  url: "{% url forestal2.empresas.views.assocservizodetalle %}",
+                  data: {
+                      detalle: row_id,
+                      servizo: selrow
+                  },
+                  dataType: "text",
+                  error: function (e) {
+                      alert("Erro asociando filas (client)");
+                  },
+                  success: function (data, a, b) {
+                      if (data == "OK") {
+                          $("#" + subgrid_table_id).trigger("reloadGrid");
+                      } else {
+                          alert("Erro asociando filas (server)");
+                      }
+                  }
+              });
+            };
+        }; 
+
 
           /************************************************************
            2nd GRID - Detalle Factura
@@ -47,7 +99,11 @@ $(document).ready(function () {
 
               $.extend(detalleFacturaGridConf, {
                   url: '{% url forestal2.empresas.views.griddetallefactura %}/' + row_id,
-                  pager: pager_id
+                  pager: '#'+pager_id,
+
+                  subGrid: true,
+                  subGridUrl: '{% url forestal2.fincas.views.grid %}',
+                  subGridRowExpanded: servizoSubgrid
               });
 
               $("#" + subgrid_table_id).jqGrid(detalleFacturaGridConf)
@@ -57,18 +113,29 @@ $(document).ready(function () {
                   'del': false,
                   'search': true,
                   editfunc: function () {
-                      var selrow = $("#list2").getGridParam("selrow");
+                      var selrow = $("#" + subgrid_table_id).getGridParam("selrow");
                       var editUrl = '{% url admin:empresas_detallefactura_change 0 %}'.replace('0', selrow);
                       window.open(editUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
                   },
                   addfunc: function () {
                       var addUrl = '{% url forestal2.empresas.views.adddetallefactura %}' + '/'+ row_id;
-                      window.open(addUrl, '_blank', 'scrollbars=1,status=1,menubar=1,location=1');
+
+                      $.ajax({
+                          url: addUrl,
+                          method: 'get',
+                          success: function(r) {
+                              $("#" + subgrid_table_id).trigger("reloadGrid");
+                          },
+                          error: function(e) {
+                              alert("There was an error saving DetalleFactura: " + e);
+                          }
+                      });
                   }
               }, {}, {}, {}, {
                   multipleSearch: true
               });
         }
+
 
         /************************************************************
          1st GRID - Factura
@@ -99,43 +166,8 @@ $(document).ready(function () {
             multipleSearch: true
         });
 
+    });
 
-        /***************
-          3rd GRID
-          *************/
-
-      $.extend(servizoGridConf, {
-        beforeSelectRow: function(id) {
-
-          if (id == selectedFinca) {
-            selectedFinca= false;
-            caption2.html("Finca Non Seleccionada.");
-          } else {
-            selectedFinca= id;
-            caption2.html("Finca "+id+" Seleccionada.");
-          }
-          return true;
-
-        }
-      });
-
-      $("#list").jqGrid(servizoGridConf)
-      .navGrid('#pager', {'add':false, 'edit':false, 'del':false, 'search':true
-        }, {}, {}, {}, {
-      multipleSearch: true
-      })
-      .jqGrid('navButtonAdd', '#pager', {
-                            caption: "Asoc. a Detalle",
-                            title: "Asociar Tala a linea de Detalle",
-                            onClickButton: asocServizoDetalle
-                        });
-
-      }); 
-
-      var asocServizoDetalle = function() {
-      }
-
-		});
 
 		</script>
 	</head>

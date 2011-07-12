@@ -4,15 +4,15 @@ var detalleFacturaGridConf = {
                     colModel: [{
                         name: 'id',
                         index: 'id',
-                        width: 50
+                        width: 60
                     }, {
                         name: 'servizo',
                         index: 'servizo',
-                        width: 140
+                        width: 200
                     }, {
                         name: 'concepto',
                         index: 'concepto',
-                        width: 140,
+                        width: 200,
                         align: 'right'
                     }, {
                         name: 'tipo_iva',
@@ -32,7 +32,7 @@ var detalleFacturaGridConf = {
                     }, {
                         name: 'valor',
                         index: 'valor',
-                        width: 90,
+                        width: 100,
                         align: "center"
                     }],
                     caption: "Detalle",

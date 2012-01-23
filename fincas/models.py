@@ -56,9 +56,10 @@ class Monte(models.Model):
     concello = models.ForeignKey(Concello)
     lugar = models.ForeignKey(Lugar,blank=True)
     name = models.CharField(max_length=100)
+    number = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return unicode(self.number) + u':' + unicode(self.name)
 
 
 # Create your models here.

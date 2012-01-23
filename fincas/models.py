@@ -55,7 +55,7 @@ class Monte(models.Model):
     parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
     concello = models.ForeignKey(Concello)
     lugar = models.ForeignKey(Lugar,blank=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, default="")
     number = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):

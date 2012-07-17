@@ -144,7 +144,7 @@ $(document).ready(function () {
                 $("#" + subgrid_table_id).jqGrid({
                     url: '{% url forestal2.fincas.views.grid %}',
                     datatype: "json",
-                    colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'CodigoPECL', 'NORFOR'],
+                    colNames: ['id', 'concello', 'poligono', 'parcela', 'Permiso', 'Comezo', 'entradaGrupo', 'Codigo PEFC', 'NORFOR'],
                     colModel: [{
                         name: 'id',
                         index: 'id',
@@ -179,7 +179,7 @@ $(document).ready(function () {
                         width: 105,
                         align: "center"
                     }, {
-                        name: 'codigoPECL',
+                        name: 'codigo PEFC',
                         index: 'codigoPECL',
                         width: 140,
                         align: "center"

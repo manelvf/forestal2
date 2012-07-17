@@ -25,7 +25,7 @@ $(document).ready(function () {
         $("#list2").jqGrid({
             url: '{% url forestal2.fincas.views.grid %}',
             datatype: "json",
-            colNames: ['id', 'concello', 'poligono', 'parcela', 'm2_permiso','Permiso', 'Comezo', 'entradaGrupo', 'dataPECLsaida', 'CodigoPECL', 'NORFOR'],
+            colNames: ['id', 'concello', 'poligono', 'parcela', 'm2_permiso','Permiso', 'Comezo', 'entradaGrupo', 'data PEFC saida', 'Codigo PEFC', 'ENCE'],
             colModel: [{
                 name: 'id',
                 index: 'id',
@@ -65,17 +65,17 @@ $(document).ready(function () {
                 width: 105,
                 align: "center"
             }, {
-                name: 'dataPECLsaida',
+                name: 'data PEFC saida',
                 index: 'dataPECLsaida',
                 width: 105,
                 align: "center"
             }, {
-                name: 'codigoPECL',
+                name: 'codigo PEFC',
                 index: 'codigoPECL',
                 width: 140,
                 align: "center"
             }, {
-                name: 'NORFOR',
+                name: 'ENCE',
                 index: 'codigoNORFOR',
                 width: 75,
                 align: "center"
@@ -437,7 +437,7 @@ $(document).ready(function () {
 						{name:'parcela', index:'parcela', width:90, align:'right'}, 
 						{name:'permiso', index:'permiso', width:140, align:"center"}, 
 						{name:'comezo', index:'comezo', width:140, align:"center"},
-						{name:'codigoPECL', index:'codigoPECL', width:140, align:"center"} 
+						{name:'codigo PEFC', index:'codigoPECL', width:140, align:"center"} 
 					],
 					pager: '#pager',
 					rowNum:20,

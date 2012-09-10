@@ -1,5 +1,6 @@
-<html>
-	<head>
+{% extends 'admin/base_site.html' %}
+{% block content %}
+
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.jqgrid.css" /> 	
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.11.custom.css" /> 	
 
@@ -517,7 +518,6 @@ $(document).ready(function () {
 		</script>
 	</head>
 
-<body>
 
 <style>
 	.gray { background-color:lightgray; color:white; }
@@ -528,8 +528,6 @@ $(document).ready(function () {
 
 <center>
 	
-<a href="{% url admin:index %}">Voltar a Administración</a>
-
 <p />
 
 {% if listaCamions %}
@@ -569,5 +567,4 @@ $(document).ready(function () {
 
 </center>
 
-</body>
-</html>
+{% endblock %}

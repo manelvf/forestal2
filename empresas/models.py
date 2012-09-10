@@ -29,8 +29,10 @@ class Empresa(models.Model):
     obs = models.TextField(blank=True)
     tipoempresa = models.ForeignKey(TipoEmpresa)
     codigo_certificacion = models.CharField(max_length=255, blank=True)
+
     def __unicode__(self):
         return self.name
+
 
 class Empleado(models.Model):
     name = models.CharField(max_length=25)

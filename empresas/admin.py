@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.conf.urls.defaults import *
+
 from forestal2.empresas.models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva, Talonario 
 
 
@@ -6,6 +8,7 @@ class EmpresaAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('name', 'direccion', 'tipoempresa')
     list_filter = ('name', 'direccion', 'tipoempresa')
+
 
 class DetalleFacturaAdmin(admin.ModelAdmin):
     save_as = True

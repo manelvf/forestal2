@@ -62,7 +62,24 @@ class Monte(models.Model):
         return unicode(self.number) + u':' + unicode(self.name)
 
 
-# Create your models here.
+class BorderFinca(models.Model):
+    concello = models.ForeignKey(Concello,blank=True)
+    lugar = models.ForeignKey(Lugar,blank=True,null=True)
+    poligon = models.IntegerField()
+    parcela = models.IntegerField()
+    agregado = models.IntegerField(blank=True)
+    zona = models.IntegerField(blank=True)
+    ref_catastral = models.CharField(max_length=255, default="", blank=True)
+    obs = models.TextField(blank=True)
+
+
+class Deed(models.Model):
+    date = models.DateField(blank=True)
+    number = models.IntegerField()
+    buyer =  models.ForeignKey(Empresa)
+
+
+
 class Finca(models.Model):
     concello = models.ForeignKey(Concello)
     lugar = models.ForeignKey(Lugar,blank=True,null=True)
@@ -91,6 +108,13 @@ class Finca(models.Model):
     intensidad_catastral = models.CharField(max_length=255, default="", blank=True)
     calificacion_catastral= models.CharField(max_length=255, default="", blank=True)
 
+    borders = models.ManyToManyField(BorderFinca, through='Border')
+
+    relationships = models.ManyToManyField('self', through='Relationship', 
+                                           symmetrical=False, 
+                                           related_name='related_to+')
+
+
     class Meta:
         verbose_name = "Parcela"
         unique_together = ("concello", "poligon", "parcela", "zona")
@@ -106,6 +130,57 @@ class Finca(models.Model):
         """
 
         return str(self.pk) + " Pol: " + str(self.poligon) + ", Par:" +str(self.parcela)
+
+
+    def add_relationship(self, parcel, owner):
+        relationship, created = Relationship.objects.get_or_create(
+            from_parcel=self,
+            to_parcel=parcel,
+            owner=owner)
+        relationship, created = Relationship.objects.get_or_create(
+            from_parcel=person,
+            to_parcel=self,
+            owner=owner)
+        return relationship
+
+    def remove_relationship(self, parcel, owner):
+        Relationship.objects.filter(
+            from_parcel=self, 
+            to_parcel=parcel,
+            owner=owner).delete()
+        Relationship.objects.filter(
+            to_parcel=self, 
+            from_parcel=parcel,
+            status=status).delete()
+        return
+
+    def get_relationships(self):
+        return self.relationships.filter(
+            to_parcel__from_parcel=self)
+    
+
+
+OWNER_SAME = 1
+OWNER_DIFFERENT = 2
+RELATIONSHIP_STATUSES = (
+    (OWNER_SAME, 'Same Owner'),
+    (OWNER_DIFFERENT, 'Different Owner'),
+)
+
+
+class Border(models.Model):
+    borderFinca = models.ForeignKey(BorderFinca)
+    finca = models.ForeignKey(Finca)
+    owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
+
+
+
+class Relationship(models.Model):
+    # Relations between parcels
+    from_parcel = models.ForeignKey(Finca, related_name='from_parcel')
+    to_parcel = models.ForeignKey(Finca, related_name='to_parcel')
+
+    owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
 
 class ServizoForestalTipo(models.Model):

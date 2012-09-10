@@ -12,6 +12,7 @@ from django.core.urlresolvers import resolve
 from django.conf import settings
 from django.core import serializers
 from django.utils.html import escape
+from django.contrib.admin.views.decorators import staff_member_required
 
 from suds import WebFault
 from suds.client import Client
@@ -26,6 +27,7 @@ jsFiles = [settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js"]
 """
 viaxes grid view
 """
+@staff_member_required
 def homogeneidade(request, restriction):
 
     empresas = Empresa.objects.all()
@@ -34,8 +36,6 @@ def homogeneidade(request, restriction):
       if str(e.tipoempresa) == "Transporte":
         empresasText += str(e.pk) + ':' + e.name +";"
       
-      
-
     return render_to_response("homogeneidade.html",
         locals(), context_instance = RequestContext(request) )
 
@@ -43,6 +43,7 @@ def homogeneidade(request, restriction):
 """
 servizos grid view
 """
+@staff_member_required
 def servizogridview(request):
 
     return render_to_response("servizogridview.html",

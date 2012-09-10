@@ -7,22 +7,45 @@ from reversion.admin import VersionAdmin
 
 
 from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta
+from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed
+from forestal2.empresas.models import Empresa, TipoEmpresa
 from forestal2.memento.models import Memento
 
 
+class RelationshipInline(admin.StackedInline):
+    model = Relationship
+    #fk_name = 'from_parcel'
+
+class BorderInline(admin.TabularInline):
+    model = Border 
+    fk_name = 'finca'
 
 class FincaAdmin(VersionAdmin):
     save_as = True
     list_display = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
     list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
+    inlines = [BorderInline]
+
+
+class DeedAdmin(VersionAdmin):
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        print db_field.name
+        if db_field.name == "buyer":
+            kwargs["queryset"] = Empresa.objects.filter(tipoempresa__name="Particular")
+        return super(DeedAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class BorderFincaAdmin(VersionAdmin):
+    pass
 
 
 class ProvinciaAdmin(admin.ModelAdmin):
     pass
 
+
 class ConcelloAdmin(admin.ModelAdmin):
     pass
+
 
 class TalaAdmin(VersionAdmin):
     save_as = True
@@ -65,6 +88,8 @@ FincaAdmin.save_model = save_model
 
 
 admin.site.register(Finca, FincaAdmin)
+admin.site.register(BorderFinca, BorderFincaAdmin)
+admin.site.register(Deed, DeedAdmin)
 admin.site.register(Concello)
 admin.site.register(Provincia)
 admin.site.register(Parroquia)

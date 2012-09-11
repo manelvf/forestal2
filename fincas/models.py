@@ -86,11 +86,17 @@ class EventFincaType(models.Model):
     order = models.IntegerField()
     obs = models.TextField(blank=True)
 
+
 class EventFinca(models.Model):
-    date = models.DateField(blank=True)
     empresa = models.ForeignKey(Empresa, blank=True)
+    date = models.DateField(blank=True)
     obs = models.TextField(blank=True)
     eventType = models.ForeignKey(EventFincaType)
+
+
+class EventFincaTimeline(models.Model):
+    eventfinca = models.ForeignKey(EventFinca)
+    finca = models.ForeignKey('Finca')
 
 
 class EventFincaLog(models.Model):

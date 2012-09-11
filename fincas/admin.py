@@ -7,7 +7,7 @@ from reversion.admin import VersionAdmin
 
 
 from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca
+from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca, EventFincaTimeline
 from forestal2.empresas.models import Empresa, TipoEmpresa
 from forestal2.memento.models import Memento
 
@@ -31,11 +31,16 @@ class DeedFinca2Inline(admin.StackedInline):
     fk_name = 'finca'
 
 
+class EventFincaTimelineInline(admin.StackedInline):
+    model = EventFincaTimeline
+    #fk_name = 'eventfinca'
+
+
 class FincaAdmin(VersionAdmin):
     save_as = True
     list_display = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
     list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
-    inlines = [BorderInline, DeedFinca2Inline]
+    inlines = [BorderInline, DeedFinca2Inline, EventFincaTimelineInline]
 
 
 #class DeedFincaAdmin(VersionAdmin):

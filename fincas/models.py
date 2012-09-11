@@ -77,7 +77,25 @@ class Deed(models.Model):
     date = models.DateField(blank=True)
     number = models.IntegerField()
     buyer =  models.ForeignKey(Empresa)
+    fincas = models.ManyToManyField('Finca', through='DeedFinca', null=True)
+    price = models.FloatField(blank=True, null=True)
+    obs = models.TextField(blank=True)
 
+class EventFincaType(models.Model):
+    name = models.CharField(max_length=100, blank=True, default="")
+    order = models.IntegerField()
+    obs = models.TextField(blank=True)
+
+class EventFinca(models.Model):
+    date = models.DateField(blank=True)
+    empresa = models.ForeignKey(Empresa, blank=True)
+    obs = models.TextField(blank=True)
+    eventType = models.ForeignKey(EventFincaType)
+
+
+class EventFincaLog(models.Model):
+    eventfinca = models.ForeignKey(EventFinca)
+    finca = models.ForeignKey('Finca')
 
 
 class Finca(models.Model):
@@ -109,6 +127,8 @@ class Finca(models.Model):
     calificacion_catastral= models.CharField(max_length=255, default="", blank=True)
 
     borders = models.ManyToManyField(BorderFinca, through='Border')
+
+    events = models.ManyToManyField(EventFinca, through='EventFincaLog')
 
     relationships = models.ManyToManyField('self', through='Relationship', 
                                            symmetrical=False, 
@@ -173,6 +193,10 @@ class Border(models.Model):
     finca = models.ForeignKey(Finca)
     owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
+
+class DeedFinca(models.Model):
+    deed = models.ForeignKey(Deed)
+    finca = models.ForeignKey(Finca)
 
 
 class Relationship(models.Model):

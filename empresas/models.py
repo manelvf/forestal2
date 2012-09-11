@@ -30,6 +30,9 @@ class Empresa(models.Model):
     tipoempresa = models.ForeignKey(TipoEmpresa)
     codigo_certificacion = models.CharField(max_length=255, blank=True)
 
+    class Meta:
+        ordering = ['name']
+
     def __unicode__(self):
         return self.name
 

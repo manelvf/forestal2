@@ -7,7 +7,7 @@ from reversion.admin import VersionAdmin
 
 
 from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed
+from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca
 from forestal2.empresas.models import Empresa, TipoEmpresa
 from forestal2.memento.models import Memento
 
@@ -20,14 +20,30 @@ class BorderInline(admin.TabularInline):
     model = Border 
     fk_name = 'finca'
 
+
+class DeedFincaInline(admin.StackedInline):
+    model = DeedFinca
+    fk_name = 'deed'
+    #fields = ('finca', 'deed',)
+
+class DeedFinca2Inline(admin.StackedInline):
+    model = DeedFinca
+    fk_name = 'finca'
+
+
 class FincaAdmin(VersionAdmin):
     save_as = True
     list_display = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
     list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
-    inlines = [BorderInline]
+    inlines = [BorderInline, DeedFinca2Inline]
 
+
+#class DeedFincaAdmin(VersionAdmin):
+#    inlines = [DeedFincaInline]
 
 class DeedAdmin(VersionAdmin):
+    inlines = [DeedFincaInline]
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         print db_field.name
         if db_field.name == "buyer":
@@ -90,6 +106,9 @@ FincaAdmin.save_model = save_model
 admin.site.register(Finca, FincaAdmin)
 admin.site.register(BorderFinca, BorderFincaAdmin)
 admin.site.register(Deed, DeedAdmin)
+admin.site.register(DeedFinca)
+admin.site.register(EventFinca)
+admin.site.register(EventFincaType)
 admin.site.register(Concello)
 admin.site.register(Provincia)
 admin.site.register(Parroquia)

@@ -7,7 +7,7 @@ from reversion.admin import VersionAdmin
 
 
 from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca, EventFincaTimeline
+from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca, EventFincaTimeline, DeedSellers
 from forestal2.empresas.models import Empresa, TipoEmpresa
 from forestal2.memento.models import Memento
 
@@ -45,15 +45,25 @@ class FincaAdmin(VersionAdmin):
 
 #class DeedFincaAdmin(VersionAdmin):
 #    inlines = [DeedFincaInline]
+class DeedSellersInline(admin.StackedInline):
+    model = DeedSellers
+    fk_name = 'deed'
 
-class DeedAdmin(VersionAdmin):
-    inlines = [DeedFincaInline]
+
+class DeedAdmin(admin.ModelAdmin):
+    save_as = True
+
+    inlines = [DeedFincaInline, DeedSellersInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print db_field.name
         if db_field.name == "buyer":
             kwargs["queryset"] = Empresa.objects.filter(tipoempresa__name="Particular")
         return super(DeedAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "sellers":
+            kwargs["queryset"] = Empresa.objects.filter(tipoempresa__name="Particular")
+        return super(DeedAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
 class BorderFincaAdmin(VersionAdmin):

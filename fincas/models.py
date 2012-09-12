@@ -65,8 +65,8 @@ class Monte(models.Model):
 class BorderFinca(models.Model):
     concello = models.ForeignKey(Concello,blank=True)
     lugar = models.ForeignKey(Lugar,blank=True,null=True)
-    poligon = models.IntegerField()
-    parcela = models.IntegerField()
+    poligon = models.IntegerField(blank=True)
+    parcela = models.IntegerField(blank=True)
     agregado = models.IntegerField(blank=True)
     zona = models.IntegerField(blank=True)
     ref_catastral = models.CharField(max_length=255, default="", blank=True)

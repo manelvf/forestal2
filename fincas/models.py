@@ -73,13 +73,31 @@ class BorderFinca(models.Model):
     obs = models.TextField(blank=True)
 
 
+# Deed options
+COMPRAVENTA = 1
+HERDANZA = 2
+DEED_TYPES= (
+    (COMPRAVENTA, 'Compraventa'),
+    (HERDANZA, 'Herencia'),
+)
+
+
+class DeedSellers(models.Model):
+    deed = models.ForeignKey('Deed')
+    empresa = models.ForeignKey(Empresa)
+
+
 class Deed(models.Model):
     date = models.DateField(blank=True)
     number = models.IntegerField()
-    buyer =  models.ForeignKey(Empresa)
+    buyer =  models.ForeignKey(Empresa, related_name='buyer')
+    sellers = models.ManyToManyField(Empresa, through='DeedSellers',
+            null=True, related_name='sellers')
     fincas = models.ManyToManyField('Finca', through='DeedFinca', null=True)
     price = models.FloatField(blank=True, null=True)
+    deedType = models.IntegerField(choices=DEED_TYPES, default=COMPRAVENTA)
     obs = models.TextField(blank=True)
+
 
 class EventFincaType(models.Model):
     name = models.CharField(max_length=100, blank=True, default="")

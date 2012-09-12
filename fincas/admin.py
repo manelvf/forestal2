@@ -55,6 +55,9 @@ class DeedAdmin(admin.ModelAdmin):
 
     inlines = [DeedFincaInline, DeedSellersInline]
 
+    list_display = ('number', 'date', 'deedType')
+    list_filter = ('number', 'date', 'deedType')
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "buyer":
             kwargs["queryset"] = Empresa.objects.filter(tipoempresa__name="Particular")

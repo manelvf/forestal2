@@ -24,7 +24,7 @@ class Empresa(models.Model):
     nif = models.CharField(max_length=25, blank=True)
     direccion = models.CharField(max_length=255, blank=True)
     cp = models.CharField(max_length=25, blank=True)
-    provincia = models.ForeignKey(Provincia, blank=True)
+    provincia = models.ForeignKey(Provincia)
     telefonos = models.CharField(max_length=25, blank=True)
     obs = models.TextField(blank=True)
     tipoempresa = models.ForeignKey(TipoEmpresa)

@@ -4,5 +4,5 @@ settings.py
 *.json
 .backup
 oficina
-
+oficina.*
 

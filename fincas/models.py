@@ -98,6 +98,9 @@ class Deed(models.Model):
     deedType = models.IntegerField(choices=DEED_TYPES, default=COMPRAVENTA)
     obs = models.TextField(blank=True)
 
+    def __unicode__(self):
+        return unicode(self.number) + u' ' + unicode(self.fincas.all())
+
 
 class EventFincaType(models.Model):
     name = models.CharField(max_length=100, blank=True, default="")

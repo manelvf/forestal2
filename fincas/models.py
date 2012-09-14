@@ -64,13 +64,18 @@ class Monte(models.Model):
 
 class BorderFinca(models.Model):
     concello = models.ForeignKey(Concello,blank=True)
-    lugar = models.ForeignKey(Lugar,blank=True,null=True)
-    poligon = models.IntegerField(blank=True)
-    parcela = models.IntegerField(blank=True)
-    agregado = models.IntegerField(blank=True)
-    zona = models.IntegerField(blank=True)
-    ref_catastral = models.CharField(max_length=255, default="", blank=True)
+    lugar = models.ForeignKey(Lugar,blank=True,null=True, default=None)
+    poligon = models.IntegerField(blank=True, null=True, default=None)
+    parcela = models.IntegerField(blank=True, null=True, default=None)
+    agregado = models.IntegerField(blank=True, null=True, default=None)
+    zona = models.IntegerField(blank=True, null=True, default=None)
+    ref_catastral = models.CharField(max_length=255, default="", blank=True, null=True)
     obs = models.TextField(blank=True)
+    def __unicode__(self):
+        return unicode(unicode(self.concello.name) + u' Pol:' +
+                unicode(self.poligon) + u' Par:' +
+                unicode(self.parcela) + u' : ' +
+                unicode(self.ref_catastral))
 
 
 # Deed options

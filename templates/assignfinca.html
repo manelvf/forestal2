@@ -3,7 +3,28 @@
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.jqgrid.css" /> 	
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.11.custom.css" /> 	
 
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script>
+		<!--script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script-->
+	</head>
+
+<body>
+	<style>
+		.gray { background-color:lightgray; color:white; }
+	</style>
+
+<a href="{% url admin:index %}">Voltar a Administración</a>
+
+<p />
+{{ viaxe }}
+<p />
+<div id="response"></div>
+<p />
+
+<table id="list"></table> 
+<div id="pager"></div> 
+
+{% block footer %}
+<div id="footer"></div>
+
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/grid.locale-gl.js" ></script>
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jqGrid.min.js" ></script>
 		<script type="text/javascript">
@@ -67,25 +88,5 @@
 		});
 
 		</script>
-	</head>
+{% endblock %}
 
-<body>
-	<style>
-		.gray { background-color:lightgray; color:white; }
-	</style>
-
-<a href="{% url admin:index %}">Voltar a Administración</a>
-
-<p />
-{{ viaxe }}
-<p />
-<div id="response"></div>
-<p />
-
-<table id="list"></table> 
-<div id="pager"></div> 
-
-
-
-</body>
-</html>

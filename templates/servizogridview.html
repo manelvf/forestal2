@@ -4,13 +4,79 @@
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.jqgrid.css" /> 	
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.11.custom.css" /> 	
 
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/grid.locale-gl.js" ></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jqGrid.min.js" ></script>
-		<script type="text/javascript">
 
+
+<style>
+	.gray { background-color:lightgray; color:white; }
+	#associate {visibility:hidden; padding-top:15px; }
+	#associateCompany {visibility:hidden; padding-top:15px; }
+	#caption, #caption2 {padding:8px;}
+</style>
+
+<center>
+	
+<p />
+
+{% if listaCamions %}
+<h3>Lista de camions</h3>
+<table>
+{% for camion in listaCamions %}
+<tr><td><a href="{% url admin:fincas_viaxecamion_change camion.pk %}">{{ camion }}</a></td></tr>	
+{% endfor %}
+</table>
+{% endif %}
+
+<table id="list2"></table> 
+<div id="pager2"></div> 
+
+<div id="caption" ></div>
+
+{% if restriction == "origin" %}
+
+<table id="list"></table> 
+<div id="pager"></div> 
+
+{% else %}{% if restriction == "destination" %}
+
+<select id="companySelect">
+	{% for empresa in empresas %}
+	<option value="{{ empresa.pk }}" >{{ empresa }}</option>
+	{% endfor %}
+</select>
+<input type="button" value="Asociar" id="associateCompany" />
+
+{% endif %}
+{% endif %}
+
+<div id="caption2" ></div>
+
+<input type="button" value="Asociar" id="associate" />
+
+</center>
+
+{% endblock %}
+
+{% block footer %}{{ block.super }}
+<script type="text/javascript" charset="utf-8">
+
+    var js_files = [
+        {
+            src : "{{ MEDIA_URL }}js/grid.locale-gl.js",
+            test: function() { return true; }
+        },
+        {
+            src : "{{ MEDIA_URL }}js/jquery.jqGrid.min.js",
+            test: function() { return true; }
+        }
+    ];
+
+    loadScripts(js_files, function(){
+        jQuery(document).ready(function () {
+          doGrid();
+        });
+    });
 		
-$(document).ready(function () {
+var doGrid = function () {
 
     var caption = $("#caption");
     var caption2 = $("#caption2");
@@ -512,58 +578,8 @@ $(document).ready(function () {
 
 			}
 					
-		});
+		};
 
 
 		</script>
-
-
-<style>
-	.gray { background-color:lightgray; color:white; }
-	#associate {visibility:hidden; padding-top:15px; }
-	#associateCompany {visibility:hidden; padding-top:15px; }
-	#caption, #caption2 {padding:8px;}
-</style>
-
-<center>
-	
-<p />
-
-{% if listaCamions %}
-<h3>Lista de camions</h3>
-<table>
-{% for camion in listaCamions %}
-<tr><td><a href="{% url admin:fincas_viaxecamion_change camion.pk %}">{{ camion }}</a></td></tr>	
-{% endfor %}
-</table>
-{% endif %}
-
-<table id="list2"></table> 
-<div id="pager2"></div> 
-
-<div id="caption" ></div>
-
-{% if restriction == "origin" %}
-
-<table id="list"></table> 
-<div id="pager"></div> 
-
-{% else %}{% if restriction == "destination" %}
-
-<select id="companySelect">
-	{% for empresa in empresas %}
-	<option value="{{ empresa.pk }}" >{{ empresa }}</option>
-	{% endfor %}
-</select>
-<input type="button" value="Asociar" id="associateCompany" />
-
-{% endif %}
-{% endif %}
-
-<div id="caption2" ></div>
-
-<input type="button" value="Asociar" id="associate" />
-
-</center>
-
 {% endblock %}

@@ -4,18 +4,70 @@
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.jqgrid.css" /> 	
 		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.11.custom.css" /> 	
 
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js" ></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/grid.locale-gl.js" ></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jqGrid.min.js" ></script>
 
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/FacturaGridConf.js" ></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/DetalleFacturaGridConf.js" ></script>
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/ServizoGridConf.js" ></script>
 
-		<script type="text/javascript">
+<style>
+	.gray { background-color:lightgray; color:white; }
+	#associate {visibility:hidden; padding-top:15px; }
+	#associateCompany {visibility:hidden; padding-top:15px; }
+	#caption, #caption2 {padding:8px;}
+</style>
+
+<center>
+	
+<p />
+
+<table id="list2"></table> 
+<div id="pager2"></div> 
+
+<div id="caption2" ></div>
+
+<table id="list"></table> 
+<div id="pager"></div> 
+
+<div id="caption" ></div>
+
+
+
+</center>
+
+{% endblock %}
+{% block footer %}{{ block.super }}
+
+<script type="text/javascript" charset="utf-8">
+
+    var js_files = [
+        {
+            src : "{{ MEDIA_URL }}js/grid.locale-gl.js",
+            test: function() { return true; }
+        },
+        {
+            src : "{{ MEDIA_URL }}js/jquery.jqGrid.min.js",
+            test: function() { return true; }
+        },
+        {
+            src : "{{ MEDIA_URL }}js/FacturaGridConf.js",
+            test: function() { return true; }
+        },
+        {
+            src : "{{ MEDIA_URL }}js/DetalleFacturaGridConf.js",
+            test: function() { return true; }
+        },
+        {
+            src : "{{ MEDIA_URL }}js/ServizoGridConf.js",
+            test: function() { return true; }
+        }
+    ];
+
+    loadScripts(js_files, function(){
+        jQuery(document).ready(function () {
+          doGrid();
+        });
+    });
+
 
 		
-$(document).ready(function () {
+var doGrid = function() {
 
     /******
       Grids
@@ -167,35 +219,9 @@ $(document).ready(function () {
             multipleSearch: true
         });
 
-    });
+    };
 
 
 		</script>
-
-
-<style>
-	.gray { background-color:lightgray; color:white; }
-	#associate {visibility:hidden; padding-top:15px; }
-	#associateCompany {visibility:hidden; padding-top:15px; }
-	#caption, #caption2 {padding:8px;}
-</style>
-
-<center>
-	
-<p />
-
-<table id="list2"></table> 
-<div id="pager2"></div> 
-
-<div id="caption2" ></div>
-
-<table id="list"></table> 
-<div id="pager"></div> 
-
-<div id="caption" ></div>
-
-
-
-</center>
 
 {% endblock %}

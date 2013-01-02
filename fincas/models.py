@@ -103,6 +103,8 @@ class Deed(models.Model):
     deedType = models.IntegerField(choices=DEED_TYPES, default=COMPRAVENTA)
     obs = models.TextField(blank=True)
 
+    inscription = models.TextField(blank=True) # text for property register inscription
+
     def __unicode__(self):
         return unicode(self.number) + u' ' + unicode(self.fincas.all())
 
@@ -143,6 +145,7 @@ class Finca(models.Model):
     ref_catastral = models.CharField(max_length=255, default="", blank=True)
     pasado = models.NullBooleanField()
     obs = models.TextField(blank=True)
+    property_title = models.TextField(blank=True)
     modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal")
     fecha_plantacion = models.DateField(blank=True)
     densidad = models.FloatField(blank=True)

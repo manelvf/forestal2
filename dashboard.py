@@ -36,6 +36,14 @@ class CustomIndexDashboard(Dashboard):
                     'url': ENV_BASE_URL + '/facturagridview',
                 },
                 {
+                    'title': _(u'Listado de Fincas/Escrituras'),
+                    'url': ENV_BASE_URL + '/generateDeedCSV',
+                },
+                {
+                    'title': _(u'Rexenerar nomes/superficie de fincas'),
+                    'url': ENV_BASE_URL + '/rewriteLandSize',
+                },
+                {
                     'title': _(u'Backup'),
                     'url': ENV_BASE_URL + '/backup',
                 },

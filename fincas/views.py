@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys
 import json
+import csv
+import time
+import datetime
 
 from django.http import HttpResponse
 from django.db.models import Q
@@ -17,7 +20,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from suds import WebFault
 from suds.client import Client
 
-from forestal2.fincas.models import Finca, ViaxeCamion, Tala
+from forestal2.fincas.models import (Finca, ViaxeCamion, Tala, 
+    Deed, DeedSellers, DeedFinca)
 from forestal2.empresas.models import Empresa
 
 
@@ -393,6 +397,46 @@ def queryland(request, provincia, concello, pol, par):
         {"finca":finca, "refCatastral":refCatastral, "jsFiles":jsFiles, "nOfItems":nOfItems,
         "provincia":provincia, "concello":concello})
 
+
+
+def querylandsimple(provincia, concello, pol, par):
+    """
+    Given data for a parcel, extracts its name and surface
+    """
+
+    url = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?WSDL'
+    try:
+      client = Client(url)
+      finca = client.service.Consulta_DNPPP(provincia,concello,pol,par)
+    except WebFault,e:
+      return render_to_response("WDSLerror.html",
+          {"text":unicode(e)})
+    except Exception:
+      print "Unexpected error:", sys.exc_info()[0]
+      raise
+      
+    try:
+      nOfItems = int(finca.control.cudnp)
+    except AttributeError:
+      return render_to_response("WDSLerror.html",
+          {"text":u"Non se atopou a parcela"})
+
+    if nOfItems == 1:
+      refCatastral = finca.bico.bi.idbi.rc.pc1 + finca.bico.bi.idbi.rc.pc2 + finca.bico.bi.idbi.rc.car + finca.bico.bi.idbi.rc.cc1 + finca.bico.bi.idbi.rc.cc2 
+
+      try:
+          return (finca.bico.bi.dt.locs.lors.lorus.npa, finca.bico.lspr.spr.dspr.ssp, refCatastral,)
+      except AttributeError:
+          print dir(finca)
+          return (None,None,None,)
+
+
+    else:
+      refCatastral = u""
+      return (None,None,None,)
+
+
+
 def querycatastral(request, provincia, concello, ref_catastral):
     url = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx?WSDL'
 
@@ -408,3 +452,126 @@ def querycatastral(request, provincia, concello, ref_catastral):
         {"finca":finca, "refCatastral":ref_catastral, "jsFiles":jsFiles, "nOfItems":1,
         "provincia":provincia, "concello":concello})
     
+
+
+def cell(s):
+    t = u""
+    for k in s:
+        t += u"<td>" + unicode(k) + u"</td>"
+
+    return t
+
+def cleanNone(v):
+    if v is None:
+        return u""
+    elif v == 'None':
+        return u""
+    else: 
+        return unicode(v)
+
+def cleanZero(v):
+    if v is None:
+        return 0
+    elif v == 'None':
+        return 0
+    else:
+        return v
+
+
+def generateDeedCSV(request):
+    """
+    generates a CSV file on django folder with deed information
+    """
+    s = u""
+
+    f = (u"Fincas-" + unicode(datetime.date.today()) + u"-" 
+        + unicode(int(time.time())) + u".csv")
+
+    f = "output.csv"
+    writer = csv.writer(open(f, "wb"), dialect = csv.excel) 
+
+    d = ["Nombre",
+         "Ref. catastral",
+         "Concello",
+         "Poligono",
+         "Parcela",
+         "Agregado",
+         "Zona",
+         "ha"
+        ]
+    writer.writerow(d)
+
+    ha_acum = 0
+    deeds = Deed.objects.all()
+    for d in deeds: 
+        #s += unicode(d.date) + u"\n"
+        for f in d.fincas.all():
+
+            if d.deedType == 1:
+                sellers = d.sellers.all()
+                sellers = [k.name for k in sellers]
+                dt = unicode("Adquirido por compraventa a " + ",".join(sellers) +
+                     " en fecha " + unicode(d.date))
+            else:
+                dt = "Adquirido por herencia"
+
+            l = ["poligono " + unicode(b.poligon) +
+                              " parcela " + unicode(b.parcela)
+                              for b in f.borders.all()
+                              if b.poligon is not None]
+            db = u"Limita con parcelas: " + u", ".join(l)
+
+            s = ( 
+                unicode(f.paraje_catastral),
+                unicode(f.ref_catastral),
+                unicode(f.concello),
+                unicode(f.poligon),
+                unicode(f.parcela),
+                cleanZero(unicode(f.agregado)),
+                cleanZero(unicode(f.zona)),
+                unicode(f.ha_total),
+                unicode(dt),
+                unicode(db)
+                )
+
+            s = map(cleanNone, s)
+
+            s = [t.encode("utf-8") for t in s]
+
+            writer.writerow(s)
+
+            ha_acum += f.ha_total
+    print d.id
+        
+
+    s = "Total: " + str(ha_acum) + " m2"
+
+    return HttpResponse(s)
+
+
+def rewriteLandSize(request):
+    """
+        overwrite m2 and land size (fincas)        
+    """
+    fincas = Finca.objects.all()
+
+    for f in fincas:
+        datos = querylandsimple(
+                f.concello.provincia.name, f.concello.name,
+                f.poligon, f.parcela)
+
+        if type(datos) != HttpResponse:
+            name, surface, refCatastral = datos
+
+            if name is not None and surface is not None:
+                print name + '-' + surface + '-' + refCatastral
+                f.paraje_catastral = name.encode('utf-8')
+                f.ha_total = surface
+                f.ref_catastral = refCatastral
+                f.save()
+
+
+    s = "OK"
+    return HttpResponse(s)
+
+

@@ -9,6 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding model 'Provincia'
+        """
         db.create_table('empresas_provincia', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
@@ -113,6 +114,7 @@ class Migration(SchemaMigration):
             ('recibo', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['empresas.Factura'])),
         ))
         db.send_create_signal('empresas', ['DetalleRecibo'])
+        """
 
 
     def backwards(self, orm):

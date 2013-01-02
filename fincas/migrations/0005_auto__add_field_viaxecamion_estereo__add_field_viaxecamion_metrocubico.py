@@ -18,12 +18,14 @@ class Migration(SchemaMigration):
         db.add_column('fincas_viaxecamion', 'obs', self.gf('django.db.models.fields.TextField')(default=0, blank=True), keep_default=False)
 
         # Adding M2M table for field origen on 'ViaxeCamion'
+        """
         db.create_table(u'fincas_tala_viaxecamions', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('viaxecamion', models.ForeignKey(orm['fincas.viaxecamion'], null=False)),
             ('tala', models.ForeignKey(orm['fincas.tala'], null=False))
         ))
         db.create_unique(u'fincas_tala_viaxecamions', ['viaxecamion_id', 'tala_id'])
+        """
 
         # Adding field 'Finca.unidade'
         db.add_column('fincas_finca', 'unidade', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['fincas.Unidade'], null=True, blank=True), keep_default=False)

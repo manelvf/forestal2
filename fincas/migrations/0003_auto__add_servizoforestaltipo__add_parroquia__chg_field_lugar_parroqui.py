@@ -29,7 +29,7 @@ class Migration(SchemaMigration):
         db.alter_column('fincas_lugar', 'parroquia_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['fincas.Parroquia'], null=True, blank=True))
 
         # Adding index on 'Lugar', fields ['parroquia']
-        db.create_index('fincas_lugar', ['parroquia_id'])
+        #db.create_index('fincas_lugar', ['parroquia_id'])
 
         # Changing field 'Certificacion.finca'
         db.alter_column('fincas_certificacion', 'finca_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['fincas.Finca'], null=True))

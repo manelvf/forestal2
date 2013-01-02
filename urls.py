@@ -50,8 +50,15 @@ urlpatterns = patterns('',
     (r'adddetallefactura$', 'forestal2.empresas.views.adddetallefactura'),
     (r'assocservizodetalle$', 'forestal2.empresas.views.assocservizodetalle'),
 
+    #memento
+    (r'schred$', 'forestal2.memento.views.schred'),
+
+    # Deeds
+    (r'generateDeedCSV$', 'forestal2.fincas.views.generateDeedCSV'),
 
     (r'exportGrid$', 'forestal2.empresas.views.exportgrid'),
+
+    (r'rewriteLandSize$', 'forestal2.fincas.views.rewriteLandSize'),
 
     (r'^backup$', 'forestal2.empresas.views.backup'),
 

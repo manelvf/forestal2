@@ -10,7 +10,7 @@ This is a timber tracking application developed for a small private company.
 * Timber delivery tracking, from origin land to destination
 * Invoice management
 * Land related events (seeding, tree felling, ...)
-* DEMO: http://manelvf.com/forestal
+* DEMO: http://forestal.manelvf.com
 
 ### Implementation ###
 

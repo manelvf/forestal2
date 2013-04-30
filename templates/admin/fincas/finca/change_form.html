@@ -2,6 +2,7 @@
 {% load adminmedia admin_modify i18n %}
 
 {% block object-tools %}
+{{ block.super }}
 {% if change %}{% if not is_popup %}
 
 <input type="button" value="Consultar Parcela" id="queryland" >

@@ -364,7 +364,7 @@ class Tala(models.Model):
 
     empresas = models.ManyToManyField(Empresa, blank=True, null=True)
     viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
-    finca = models.ForeignKey(Finca)
+    finca = models.ForeignKey(Finca, null=True)
     tipo = models.ForeignKey(ServizoForestalTipo)
     obs = models.TextField(blank=True)
     

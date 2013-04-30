@@ -399,8 +399,11 @@ class TalaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TalaForm, self).__init__(*args, **kwargs)
         
+	"""
         if self.initial.has_key('comezo'):
             self.fields['viaxecamions'].queryset =  ViaxeCamion.objects.filter(dia__gte = self.initial['comezo'])
+
+	"""
 
     class Meta:
         model = Tala

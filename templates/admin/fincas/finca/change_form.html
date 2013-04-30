@@ -2,12 +2,12 @@
 {% load adminmedia admin_modify i18n %}
 
 {% block object-tools %}
-{{ block.super }}
 {% if change %}{% if not is_popup %}
 
 <input type="button" value="Consultar Parcela" id="queryland" >
 <input type="button" value="Consultar Ref. Catastral" id="querycatastral" >
 <input type="button" value="Ver en Catastro" id="vercatastro" >
+
 
 <script type="text/javascript">
 

@@ -87,8 +87,11 @@ class TalaAdmin(VersionAdmin):
     list_filter = ('permiso','entradaGrupo','comezo','final','tipo', 'dataPECL')
     #date_hierarchy = 'comezo' 
     list_per_page = 25
+
+    """
     def get_form(self, request, obj=None, **kwargs):
         return TalaForm
+    """
 
 class LugarAdmin(admin.ModelAdmin):
     save_as = True

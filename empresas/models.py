@@ -1,6 +1,9 @@
 from django.db import models
 from forestal2.settings import ENV_BASE_URL
 
+class PhoneBook(models.Model):
+    number = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
 
 # Create your models here.
 class Provincia(models.Model):

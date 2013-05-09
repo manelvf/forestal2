@@ -72,9 +72,15 @@ class BorderFinca(models.Model):
     ref_catastral = models.CharField(max_length=255, default="", blank=True, null=True)
     obs = models.TextField(blank=True)
     def __unicode__(self):
-        return (unicode(self.concello.name) + u' Pol:' +
+        c = unicode(u'' if not hasattr(self, 'concello') else 
+                    self.concello if not hasattr(self.concello, 'name') else
+                    self.concello.name)
+
+        return (#unicode(self.concello.name) + u' Pol:' +
+                c +
                 unicode(self.poligon) + u' Par:' +
-                unicode(self.parcela if parcela in self else u'') + u' : ' +
+                unicode(u'' if not hasattr(self, 'parcela') else self.parcela) +
+		unicode(' : ') +
                 unicode(self.ref_catastral))
 
 

@@ -1,0 +1,66 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+{% load adminmedia %}
+
+<script type="text/javascript" >
+window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";
+</script>
+
+<link href="/media/css/forms.css" rel="stylesheet" type="text/css" >
+<link href="/media/css/base.css" rel="stylesheet" type="text/css" >
+<link href="/site_media/admin_tools/css/theming.css" rel="stylesheet" type="text/css" >
+<link href="/media/css/widgets.css" rel="stylesheet" type="text/css" >
+
+<script type="text/javascript" src="/jsi18n/"></script>
+<script type="text/javascript" src="/media/js/core.js"></script>
+<script type="text/javascript" src="/media/js/calendar.js"></script>
+
+{{ form.media }}
+
+
+<div>
+	<div>
+	<form id="rangeform" action="/weightactionsoutput/" method="POST" >
+
+	{{ form.as_p }}
+
+        <div style="font-color:red;font-weight:strong;" id="warning" >
+	</div>
+	<div>
+		<input type="submit" value="Obter datos de pesadas" />
+	</div>
+	</form>
+
+	</div>
+
+</div>
+
+<script type="text/javascript" >
+var r;
+
+$(document).ready( function() {
+    
+    $("form#rangeform").submit( function(e) {
+        $this = $(this);
+	var d1 = Date.parse(this.comezo.value);
+	var d2 = Date.parse(this.final.value);
+
+
+	if (isNaN(d1) || isNaN(d2) ) {
+            e.preventDefault();
+	    $("#warning").html("As duas datas deben ser validas e completas");
+	} else if(d2 < d1) {
+            e.preventDefault();
+	    $("#warning").html("As data final non debe ser inferior a inicial");
+	} else {
+	    return true;	
+	}
+
+    });
+
+});
+
+
+</script>
+
+{% endblock %}

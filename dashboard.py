@@ -36,6 +36,10 @@ class CustomIndexDashboard(Dashboard):
                     'url': ENV_BASE_URL + '/facturagridview',
                 },
                 {
+                    'title': _(u'Pesadas'),
+                    'url': ENV_BASE_URL + '/weightactions',
+                },
+                {
                     'title': _(u'Listado de Fincas/Escrituras'),
                     'url': ENV_BASE_URL + '/generateDeedCSV',
                 },

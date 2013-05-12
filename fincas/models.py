@@ -7,6 +7,7 @@ from django.core import serializers
 from django.utils.encoding import smart_unicode
 from django.db import models
 from django import forms
+from django.contrib.admin import widgets
 
 from forestal2.empresas.models import Empresa, Camion
 from forestal2.settings import ENV_BASE_URL
@@ -415,3 +416,18 @@ class TalaForm(forms.ModelForm):
         model = Tala
 
 
+class DateRange(models.Model):
+    """ Model "helper" for data ranges """
+    comezo = models.DateField(blank=True)
+    final = models.DateField(blank=True)
+
+
+class DateRangeForm(forms.ModelForm):
+
+    class Meta:
+        model = DateRange
+
+    def __init__(self, *args, **kwargs):
+        super(DateRangeForm, self).__init__(*args, **kwargs)
+        self.fields['comezo'].widget = widgets.AdminDateWidget()
+        self.fields['final'].widget = widgets.AdminDateWidget()

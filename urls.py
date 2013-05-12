@@ -23,6 +23,10 @@ urlpatterns = patterns('',
     (r'^databrowse/(.*)', databrowse.site.root),
     #(r'^homogeneidade/', 'forestal2.fincas.views.homogeneidade' ),
     (r'^homogeneidade/(.*)/$', 'forestal2.fincas.views.homogeneidade' ),
+
+    (r'^weightactions/$', 'forestal2.fincas.views.weightActions' ),
+    (r'^weightactionsoutput/$', 'forestal2.fincas.views.weightActionsOutput' ),
+
     (r'^queryland$', 'forestal2.fincas.views.queryland' ),
     (r'^queryland/(.*)/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.queryland' ),
     (r'^querycatastral/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.querycatastral' ),
@@ -61,6 +65,8 @@ urlpatterns = patterns('',
     (r'rewriteLandSize$', 'forestal2.fincas.views.rewriteLandSize'),
 
     (r'^backup$', 'forestal2.empresas.views.backup'),
+
+    (r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'),
 
     (r'^admin_tools/', include('admin_tools.urls')),
 

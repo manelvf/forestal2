@@ -15,13 +15,17 @@ from django.core.urlresolvers import resolve
 from django.conf import settings
 from django.core import serializers
 from django.utils.html import escape
+from django import forms
+from django.forms import ModelForm
+from django.contrib.admin import widgets
 from django.contrib.admin.views.decorators import staff_member_required
 
 from suds import WebFault
 from suds.client import Client
 
 from forestal2.fincas.models import (Finca, ViaxeCamion, Tala, 
-    Deed, DeedSellers, DeedFinca)
+    Deed, DeedSellers, DeedFinca,
+    DateRange, DateRangeForm)
 from forestal2.empresas.models import Empresa
 
 
@@ -575,3 +579,22 @@ def rewriteLandSize(request):
     return HttpResponse(s)
 
 
+@staff_member_required
+def weightActions(request):
+    """ shows the weight data in a date range """
+
+    form = DateRangeForm()
+
+    return render_to_response("weightActions.html",
+        locals(), context_instance = RequestContext(request) )
+
+
+@staff_member_required
+def weightActionsOutput(request):
+    post = request.POST
+
+    viaxes = (ViaxeCamion.objects.filter(dia__gte = post['comezo'])
+    .filter(dia__lte = post['final']))
+
+    return render_to_response("weightActionsOutput.html",
+        locals(), context_instance = RequestContext(request) )

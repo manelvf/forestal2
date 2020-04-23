@@ -4,13 +4,13 @@ from pprint import pprint
 import datetime
 
 from django.core import serializers
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 from django.db import models
 from django import forms
 from django.contrib.admin import widgets
 
-from forestal2.empresas.models import Empresa, Camion
-from forestal2.settings import ENV_BASE_URL
+from empresas.models import Empresa, Camion
+from settings import ENV_BASE_URL
 
 class Unidade(models.Model):
     name = models.CharField(max_length=50)
@@ -26,20 +26,20 @@ class Provincia(models.Model):
 
 class Concello(models.Model):
     name = models.CharField(max_length=255)
-    provincia = models.ForeignKey(Provincia, null=True, blank=True)
+    provincia = models.ForeignKey(Provincia, null=True, blank=True, on_delete=models.CASCADE)
     def __unicode__(self):
         return (unicode(self.name) + u"-" + unicode(self.provincia)) or ""
 
 class Parroquia(models.Model):
     name = models.CharField(max_length=255)
-    concello = models.ForeignKey(Concello)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
     def __unicode__(self):
         return self.name + ", " + unicode(self.concello)
 
 class Lugar(models.Model):
     name = models.CharField(max_length=255)
-    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
-    concello = models.ForeignKey(Concello)
+    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="", on_delete=models.CASCADE)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
     def __unicode__(self):
         return self.name + u", " + unicode(self.parroquia) 
     
@@ -53,9 +53,9 @@ class ModeloForestal(models.Model):
 
 
 class Monte(models.Model):
-    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
-    concello = models.ForeignKey(Concello)
-    lugar = models.ForeignKey(Lugar,blank=True)
+    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="", on_delete=models.CASCADE)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
+    lugar = models.ForeignKey(Lugar,blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True, default="")
     number = models.IntegerField(blank=True, null=True)
 
@@ -64,8 +64,8 @@ class Monte(models.Model):
 
 
 class BorderFinca(models.Model):
-    concello = models.ForeignKey(Concello,blank=True)
-    lugar = models.ForeignKey(Lugar,blank=True,null=True, default=None)
+    concello = models.ForeignKey(Concello,blank=True, on_delete=models.CASCADE)
+    lugar = models.ForeignKey(Lugar,blank=True,null=True, default=None, on_delete=models.CASCADE)
     poligon = models.IntegerField(blank=True, null=True, default=None)
     parcela = models.IntegerField(blank=True, null=True, default=None)
     agregado = models.IntegerField(blank=True, null=True, default=None)
@@ -95,14 +95,14 @@ DEED_TYPES= (
 
 
 class DeedSellers(models.Model):
-    deed = models.ForeignKey('Deed')
-    empresa = models.ForeignKey(Empresa)
+    deed = models.ForeignKey('Deed', on_delete=models.CASCADE)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
 
 
 class Deed(models.Model):
     date = models.DateField(blank=True)
     number = models.IntegerField()
-    buyer =  models.ForeignKey(Empresa, related_name='buyer')
+    buyer =  models.ForeignKey(Empresa, related_name='buyer', on_delete=models.CASCADE)
     sellers = models.ManyToManyField(Empresa, through='DeedSellers',
             null=True, related_name='sellers')
     fincas = models.ManyToManyField('Finca', through='DeedFinca', null=True)
@@ -123,46 +123,46 @@ class EventFincaType(models.Model):
 
 
 class EventFinca(models.Model):
-    empresa = models.ForeignKey(Empresa, blank=True)
+    empresa = models.ForeignKey(Empresa, blank=True, on_delete=models.CASCADE)
     date = models.DateField(blank=True)
     obs = models.TextField(blank=True)
-    eventType = models.ForeignKey(EventFincaType)
+    eventType = models.ForeignKey(EventFincaType, on_delete=models.CASCADE)
 
 
 class EventFincaTimeline(models.Model):
-    eventfinca = models.ForeignKey(EventFinca)
-    finca = models.ForeignKey('Finca')
+    eventfinca = models.ForeignKey(EventFinca, on_delete=models.CASCADE)
+    finca = models.ForeignKey('Finca', on_delete=models.CASCADE)
 
 
 class EventFincaLog(models.Model):
-    eventfinca = models.ForeignKey(EventFinca)
-    finca = models.ForeignKey('Finca')
+    eventfinca = models.ForeignKey(EventFinca, on_delete=models.CASCADE)
+    finca = models.ForeignKey('Finca', on_delete=models.CASCADE)
 
 
 class Finca(models.Model):
-    concello = models.ForeignKey(Concello)
-    lugar = models.ForeignKey(Lugar,blank=True,null=True)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
+    lugar = models.ForeignKey(Lugar,blank=True,null=True, on_delete=models.CASCADE)
     poligon = models.IntegerField()
     parcela = models.IntegerField()
     agregado = models.IntegerField(blank=True)
     zona = models.IntegerField(blank=True)
-    monte = models.ForeignKey(Monte,blank=True,null=True)
+    monte = models.ForeignKey(Monte,blank=True,null=True, on_delete=models.CASCADE)
     superficie = models.FloatField(blank=True)
     codigo_ref = models.CharField(max_length=255, default="", blank=True)
     ref_catastral = models.CharField(max_length=255, default="", blank=True)
     pasado = models.NullBooleanField()
     obs = models.TextField(blank=True)
     property_title = models.TextField(blank=True)
-    modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal")
+    modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal", on_delete=models.CASCADE)
     fecha_plantacion = models.DateField(blank=True)
     densidad = models.FloatField(blank=True)
     ha_matorral = models.FloatField(blank=True)
     ha_prado = models.FloatField(blank=True)
     ha_construidas = models.FloatField(blank=True)
     ha_total = models.FloatField(blank=True)
-    dono = models.ForeignKey(Empresa, related_name="finca_dono_set")
-    empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set")
-    unidade = models.ForeignKey(Unidade,blank=True,null=True)
+    dono = models.ForeignKey(Empresa, related_name="finca_dono_set", on_delete=models.CASCADE)
+    empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set", on_delete=models.CASCADE)
+    unidade = models.ForeignKey(Unidade,blank=True,null=True, on_delete=models.CASCADE)
     paraje_catastral = models.CharField(max_length=255, default="", blank=True)
     cultivo_catastral = models.CharField(max_length=255, default="", blank=True)
     intensidad_catastral = models.CharField(max_length=255, default="", blank=True)
@@ -231,20 +231,20 @@ RELATIONSHIP_STATUSES = (
 
 
 class Border(models.Model):
-    borderFinca = models.ForeignKey(BorderFinca)
-    finca = models.ForeignKey(Finca)
+    borderFinca = models.ForeignKey(BorderFinca, on_delete=models.CASCADE)
+    finca = models.ForeignKey(Finca, on_delete=models.CASCADE)
     owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
 
 class DeedFinca(models.Model):
-    deed = models.ForeignKey(Deed)
-    finca = models.ForeignKey(Finca)
+    deed = models.ForeignKey(Deed, on_delete=models.CASCADE)
+    finca = models.ForeignKey(Finca, on_delete=models.CASCADE)
 
 
 class Relationship(models.Model):
     # Relations between parcels
-    from_parcel = models.ForeignKey(Finca, related_name='from_parcel')
-    to_parcel = models.ForeignKey(Finca, related_name='to_parcel')
+    from_parcel = models.ForeignKey(Finca, related_name='from_parcel', on_delete=models.CASCADE)
+    to_parcel = models.ForeignKey(Finca, related_name='to_parcel', on_delete=models.CASCADE)
 
     owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
@@ -257,7 +257,7 @@ class ServizoForestalTipo(models.Model):
 
 
 class Certificacion(models.Model):
-    finca = models.ForeignKey(Finca, null=True)
+    finca = models.ForeignKey(Finca, null=True, on_delete=models.CASCADE)
     envio_documentacion = models.DateField()
     aprobacion = models.DateField();
     def __unicode__(self):
@@ -274,11 +274,11 @@ class Especie(models.Model):
 class ViaxeCamion(models.Model):
     n_talonario = models.PositiveIntegerField(null=True, blank=True, verbose_name=u"Nº talonario")
     dia = models.DateField(null=True, blank=True)
-    camion = models.ForeignKey(Camion,null=True, blank=True)
+    camion = models.ForeignKey(Camion,null=True, blank=True, on_delete=models.CASCADE)
     tm = models.FloatField(null=True, blank=True)
     estereo = models.FloatField(null=True, blank=True)
     metrocubico = models.FloatField(null=True, blank=True)
-    destino = models.ForeignKey(Empresa, null=True, blank=True)
+    destino = models.ForeignKey(Empresa, null=True, blank=True, on_delete=models.CASCADE)
     origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
     obs = models.TextField(blank=True)
 
@@ -366,13 +366,13 @@ class Tala(models.Model):
     m2_permiso = models.FloatField(verbose_name=u"m3 permiso", default=0)
     altura = models.IntegerField(default=0, null=True,blank=True)
 
-    tipocorta = models.ForeignKey(TipoCorta, null=True, blank=True)
+    tipocorta = models.ForeignKey(TipoCorta, null=True, blank=True, on_delete=models.CASCADE)
     condicions = models.ManyToManyField(CondicionCorta, blank=True, null=True)
 
     empresas = models.ManyToManyField(Empresa, blank=True, null=True)
     viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
-    finca = models.ForeignKey(Finca, null=True)
-    tipo = models.ForeignKey(ServizoForestalTipo)
+    finca = models.ForeignKey(Finca, null=True, on_delete=models.CASCADE)
+    tipo = models.ForeignKey(ServizoForestalTipo, on_delete=models.CASCADE)
     obs = models.TextField(blank=True)
     
     def get_viaxes(self):
@@ -405,15 +405,10 @@ class TalaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TalaForm, self).__init__(*args, **kwargs)
-        
-	"""
-        if self.initial.has_key('comezo'):
-            self.fields['viaxecamions'].queryset =  ViaxeCamion.objects.filter(dia__gte = self.initial['comezo'])
-
-	"""
 
     class Meta:
         model = Tala
+        fields = ["comezo", "final", "permiso", "tm_permiso", "m2_permiso", "altura", "tipocorta", "condicions", "finca", "tipo", "obs"]
 
 
 class DateRange(models.Model):
@@ -426,6 +421,7 @@ class DateRangeForm(forms.ModelForm):
 
     class Meta:
         model = DateRange
+        fields = ['comezo', 'final']
 
     def __init__(self, *args, **kwargs):
         super(DateRangeForm, self).__init__(*args, **kwargs)

@@ -2,14 +2,12 @@ import re
 
 from django.core import serializers
 from django.contrib import admin
-from django.contrib import databrowse
-from reversion.admin import VersionAdmin
 
 
-from forestal2.ReadOnly import ReadOnlyAdminFields
-from forestal2.fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca, EventFincaTimeline, DeedSellers
-from forestal2.empresas.models import Empresa, TipoEmpresa
-from forestal2.memento.models import Memento
+from ReadOnly import ReadOnlyAdminFields
+from fincas.models import Finca, Provincia, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala, TalaForm, Unidade, Monte, TipoCorta, Relationship, BorderFinca, Border, Deed, EventFinca, EventFincaType, DeedFinca, EventFincaTimeline, DeedSellers
+from empresas.models import Empresa, TipoEmpresa
+from memento.models import Memento
 
 
 class RelationshipInline(admin.StackedInline):
@@ -36,15 +34,13 @@ class EventFincaTimelineInline(admin.StackedInline):
     #fk_name = 'eventfinca'
 
 
-class FincaAdmin(VersionAdmin):
+class FincaAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
     list_filter = ('concello', 'lugar', 'poligon', 'parcela','monte','pasado')
     inlines = [BorderInline, DeedFinca2Inline, EventFincaTimelineInline]
 
 
-#class DeedFincaAdmin(VersionAdmin):
-#    inlines = [DeedFincaInline]
 class DeedSellersInline(admin.StackedInline):
     model = DeedSellers
     fk_name = 'deed'
@@ -69,7 +65,7 @@ class DeedAdmin(admin.ModelAdmin):
         return super(DeedAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
-class BorderFincaAdmin(VersionAdmin):
+class BorderFincaAdmin(admin.ModelAdmin):
     pass
 
 
@@ -81,7 +77,7 @@ class ConcelloAdmin(admin.ModelAdmin):
     pass
 
 
-class TalaAdmin(VersionAdmin):
+class TalaAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('finca', 'entradaGrupo', 'permiso', 'comezo', 'final', 'tipo','codigoPECL','codigoNORFOR','get_viaxes','tm_permiso','m2_permiso')
     list_filter = ('permiso','entradaGrupo','comezo','final','tipo', 'dataPECL')
@@ -98,7 +94,7 @@ class LugarAdmin(admin.ModelAdmin):
     list_display = ('name','parroquia','concello')
     list_filter = ('name','parroquia','concello')
 
-class ViaxeCamionAdmin(VersionAdmin):
+class ViaxeCamionAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('dia','camion','tm','destino','get_concello','get_poligon','get_parcela','get_permission','get_monte')
     list_filter = ('dia','camion','tm','destino')
@@ -145,17 +141,3 @@ admin.site.register(Monte)
 admin.site.register(TipoCorta)
 
 
-"""
-DataBrowse
-"""
-databrowse.site.register(Finca)
-databrowse.site.register(Concello)
-databrowse.site.register(Parroquia)
-databrowse.site.register(Lugar)
-databrowse.site.register(ModeloForestal)
-databrowse.site.register(ServizoForestalTipo)
-databrowse.site.register(Certificacion)
-databrowse.site.register(Especie)
-databrowse.site.register(ViaxeCamion)
-databrowse.site.register(Tala)
-databrowse.site.register(Monte)

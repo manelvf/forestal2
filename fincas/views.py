@@ -10,8 +10,7 @@ from django.db.models import Q
 from django.template.loader import get_template
 from django.template import Context
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.core.urlresolvers import resolve
+from django.shortcuts import render
 from django.conf import settings
 from django.core import serializers
 from django.utils.html import escape
@@ -23,10 +22,10 @@ from django.contrib.admin.views.decorators import staff_member_required
 from suds import WebFault
 from suds.client import Client
 
-from forestal2.fincas.models import (Finca, ViaxeCamion, Tala, 
+from fincas.models import (Finca, ViaxeCamion, Tala, 
     Deed, DeedSellers, DeedFinca,
     DateRange, DateRangeForm)
-from forestal2.empresas.models import Empresa
+from empresas.models import Empresa
 
 
 jsFiles = [settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js"]
@@ -44,7 +43,7 @@ def homogeneidade(request, restriction):
       if str(e.tipoempresa) == "Transporte":
         empresasText += str(e.pk) + ':' + e.name +";"
       
-    return render_to_response("homogeneidade.html",
+    return render(None, "homogeneidade.html",
         locals(), context_instance = RequestContext(request) )
 
   
@@ -54,14 +53,14 @@ servizos grid view
 @staff_member_required
 def servizogridview(request):
 
-    return render_to_response("servizogridview.html",
+    return render(None, "servizogridview.html",
         locals(), context_instance = RequestContext(request) )
 
 
 def assignfinca(request, id):
     viaxe = ViaxeCamion.objects.get(pk=id)
 
-    return render_to_response("assignfinca.html",
+    return render(None, "assignfinca.html",
         locals(), context_instance = RequestContext(request) )
 
 
@@ -293,7 +292,7 @@ def gridSearch(request, model, sidx=None):
     if filters["groupOp"] == "OR":
         objs = eval("objs.filter(" + " | ".join(query_filters) + ")")
     else:
-        print "objs.filter(" + ", ".join(query_filters) + ")"
+        print("objs.filter(" + ", ".join(query_filters) + ")")
         objs = eval("objs.filter(" + ", ".join(query_filters) + ")")
 
     if sidx:
@@ -355,7 +354,7 @@ def joinviaxefinca(request):
         viaxe.origen.clear()
 
     except:
-      print "Unexpected error:", sys.exc_info()[0]
+      print("Unexpected error:", sys.exc_info()[0])
       return HttpResponse("FAIL")
 
     return HttpResponse("OK")
@@ -367,7 +366,7 @@ def listaviaxes(request, id):
 
     listaCamions = v
 
-    return render_to_response("homogeneidade.html",
+    return render(None, "homogeneidade.html",
         {"listaCamions":listaCamions, "s":s} )
 
 
@@ -378,17 +377,17 @@ def queryland(request, provincia, concello, pol, par):
     try:
       client = Client(url)
       finca = client.service.Consulta_DNPPP(provincia,concello,pol,par)
-    except WebFault,e:
-      return render_to_response("WDSLerror.html",
+    except (WebFault, ) as e:
+      return render(None, "WDSLerror.html",
           {"text":unicode(e)})
     except Exception:
-      print "Unexpected error:", sys.exc_info()[0]
+      print("Unexpected error:", sys.exc_info()[0])
       raise
       
     try:
       nOfItems = int(finca.control.cudnp)
     except AttributeError:
-      return render_to_response("WDSLerror.html",
+      return render(None, "WDSLerror.html",
           {"text":u"Non se atopou a parcela"})
 
     if nOfItems == 1:
@@ -397,7 +396,7 @@ def queryland(request, provincia, concello, pol, par):
       refCatastral = u""
 
     
-    return render_to_response("queryland.html",
+    return render(None, "queryland.html",
         {"finca":finca, "refCatastral":refCatastral, "jsFiles":jsFiles, "nOfItems":nOfItems,
         "provincia":provincia, "concello":concello})
 
@@ -412,17 +411,17 @@ def querylandsimple(provincia, concello, pol, par):
     try:
       client = Client(url)
       finca = client.service.Consulta_DNPPP(provincia,concello,pol,par)
-    except WebFault,e:
-      return render_to_response("WDSLerror.html",
+    except (WebFault, ) as e:
+      return render(None, "WDSLerror.html",
           {"text":unicode(e)})
     except Exception:
-      print "Unexpected error:", sys.exc_info()[0]
+      print("Unexpected error:", sys.exc_info()[0])
       raise
       
     try:
       nOfItems = int(finca.control.cudnp)
     except AttributeError:
-      return render_to_response("WDSLerror.html",
+      return render(None, "WDSLerror.html",
           {"text":u"Non se atopou a parcela"})
 
     if nOfItems == 1:
@@ -431,7 +430,7 @@ def querylandsimple(provincia, concello, pol, par):
       try:
           return (finca.bico.bi.dt.locs.lors.lorus.npa, finca.bico.lspr.spr.dspr.ssp, refCatastral,)
       except AttributeError:
-          print dir(finca)
+          print(dir(finca))
           return (None,None,None,)
 
 
@@ -447,12 +446,12 @@ def querycatastral(request, provincia, concello, ref_catastral):
     try:
       client = Client(url)
       finca = client.service.Consulta_DNPRC(provincia,concello,ref_catastral)
-    except WebFault,e:
-      return render_to_response("WDSLerror.html",
+    except (WebFault, ) as e:
+      return render(None, "WDSLerror.html",
           {"text":unicode(e)})
 
 
-    return render_to_response("queryland.html",
+    return render(None, "queryland.html",
         {"finca":finca, "refCatastral":ref_catastral, "jsFiles":jsFiles, "nOfItems":1,
         "provincia":provincia, "concello":concello})
     
@@ -545,7 +544,7 @@ def generateDeedCSV(request):
             writer.writerow(s)
 
             ha_acum += f.ha_total
-    print d.id
+    print(d.id)
         
 
     s = "Total: " + str(ha_acum) + " m2"
@@ -568,7 +567,7 @@ def rewriteLandSize(request):
             name, surface, refCatastral = datos
 
             if name is not None and surface is not None:
-                print name + '-' + surface + '-' + refCatastral
+                print(name + '-' + surface + '-' + refCatastral)
                 f.paraje_catastral = name.encode('utf-8')
                 f.ha_total = surface
                 f.ref_catastral = refCatastral
@@ -585,7 +584,7 @@ def weightActions(request):
 
     form = DateRangeForm()
 
-    return render_to_response("weightActions.html",
+    return render(None, "weightActions.html",
         locals(), context_instance = RequestContext(request) )
 
 
@@ -596,5 +595,5 @@ def weightActionsOutput(request):
     viaxes = (ViaxeCamion.objects.filter(dia__gte = post['comezo'])
     .filter(dia__lte = post['final']))
 
-    return render_to_response("weightActionsOutput.html",
+    return render(None, "weightActionsOutput.html",
         locals(), context_instance = RequestContext(request) )

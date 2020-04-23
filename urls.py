@@ -1,11 +1,16 @@
 # test lines
 # for git
 import settings
-from django.conf.urls.defaults import *
-from django.contrib import databrowse
+from django.conf.urls import url, include
+from django.urls import re_path, path
+from django.views import static
 
-from forestal2.fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala
-from forestal2.empresas.models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva 
+from fincas.models import Finca, Concello, Parroquia, Lugar, ModeloForestal, ServizoForestalTipo, Certificacion, ViaxeCamion, Especie, Tala
+from empresas.models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva
+
+from fincas import views as fincasviews
+from empresas import views as empresasviews
+from memento import views as mementoviews
 
 
 
@@ -13,71 +18,68 @@ from forestal2.empresas.models import TipoEmpresa, Empresa, Empleado, Camion, Ti
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Example:
-    # (r'^forestal2/', include('forestal2.foo.urls')),
+    # (r'^/', include('forestal2.foo.urls')),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^databrowse/(.*)', databrowse.site.root),
     #(r'^homogeneidade/', 'forestal2.fincas.views.homogeneidade' ),
-    (r'^homogeneidade/(.*)/$', 'forestal2.fincas.views.homogeneidade' ),
+    re_path(r'^homogeneidade/(.*)/$', fincasviews.homogeneidade),
 
-    (r'^weightactions/$', 'forestal2.fincas.views.weightActions' ),
-    (r'^weightactionsoutput/$', 'forestal2.fincas.views.weightActionsOutput' ),
+    url(r'^weightactions/$', fincasviews.weightActions),
+    url(r'^weightactionsoutput/$', fincasviews.weightActionsOutput),
 
-    (r'^queryland$', 'forestal2.fincas.views.queryland' ),
-    (r'^queryland/(.*)/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.queryland' ),
-    (r'^querycatastral/(.*)/(.*)/(.*)$', 'forestal2.fincas.views.querycatastral' ),
-    (r'listaviaxes/(?P<id>\d+)/$', 'forestal2.fincas.views.listaviaxes', {}, 'listaviaxes-views'),
-    (r'assignfinca/(?P<id>\d+)/$', 'forestal2.fincas.views.assignfinca'),
-    (r'grid/(?P<id>\d+)/$', 'forestal2.fincas.views.grid'),
-    (r'grid/$', 'forestal2.fincas.views.grid'),
-    (r'grid$', 'forestal2.fincas.views.grid'),
-    (r'gridviaxe$', 'forestal2.fincas.views.gridviaxe'),
-    (r'gridviaxe/(?P<servizo>\d+)/$', 'forestal2.fincas.views.gridviaxe'),
-    (r'gridfinca$', 'forestal2.fincas.views.gridfinca'),
-    (r'joinviaxefinca$', 'forestal2.fincas.views.joinviaxefinca'),
-    (r'assocfincaservizo$', 'forestal2.fincas.views.assocfincaservizo'),
-    (r'assocservizocamion$', 'forestal2.fincas.views.assocservizoviaxe'),
-    (r'desassocviaxeservizo$', 'forestal2.fincas.views.desassocviaxeservizo'),
+    url(r'^queryland$', fincasviews.queryland ),
+    url(r'^queryland/(.*)/(.*)/(.*)/(.*)$', fincasviews.queryland ),
+    url(r'^querycatastral/(.*)/(.*)/(.*)$', fincasviews.querycatastral ),
+    url(r'listaviaxes/(?P<id>\d+)/$', fincasviews.listaviaxes, {}, 'listaviaxes-views'),
+    url(r'assignfinca/(?P<id>\d+)/$', fincasviews.assignfinca),
+    url(r'grid/(?P<id>\d+)/$', fincasviews.grid),
+    url(r'grid/$', fincasviews.grid),
+    url(r'grid$', fincasviews.grid),
+    url(r'gridviaxe$', fincasviews.gridviaxe),
+    url(r'gridviaxe/(?P<servizo>\d+)/$', fincasviews.gridviaxe),
+    url(r'gridfinca$', fincasviews.gridfinca),
+    url(r'joinviaxefinca$', fincasviews.joinviaxefinca),
+    url(r'assocfincaservizo$', fincasviews.assocfincaservizo),
+    url(r'assocservizocamion$', fincasviews.assocservizoviaxe),
+    url(r'desassocviaxeservizo$', fincasviews.desassocviaxeservizo),
 
-    (r'^servizogridview$', 'forestal2.fincas.views.servizogridview' ),
-    (r'gridservizo$', 'forestal2.fincas.views.gridservizo'),
+    url(r'^servizogridview$', fincasviews.servizogridview ),
+    url(r'gridservizo$', fincasviews.gridservizo),
 
-    (r'^facturagridview$', 'forestal2.empresas.views.facturagridview' ),
-    (r'gridfactura$', 'forestal2.empresas.views.gridfactura'),
-    (r'griddetallefactura$', 'forestal2.empresas.views.griddetallefactura'),
-    (r'griddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.griddetallefactura'),
-    (r'adddetallefactura/(?P<id>\d+)/$', 'forestal2.empresas.views.adddetallefactura'),
-    (r'adddetallefactura$', 'forestal2.empresas.views.adddetallefactura'),
-    (r'assocservizodetalle$', 'forestal2.empresas.views.assocservizodetalle'),
+    url(r'^facturagridview$', empresasviews.facturagridview),
+    url(r'gridfactura$', empresasviews.gridfactura),
+    url(r'griddetallefactura$', empresasviews.griddetallefactura),
+    url(r'griddetallefactura/(?P<id>\d+)/$', empresasviews.griddetallefactura),
+    url(r'adddetallefactura/(?P<id>\d+)/$', empresasviews.adddetallefactura),
+    url(r'adddetallefactura$', empresasviews.adddetallefactura),
+    url(r'assocservizodetalle$', empresasviews.assocservizodetalle),
 
     #memento
-    (r'schred$', 'forestal2.memento.views.schred'),
+    url(r'schred$', mementoviews.schred),
 
     # Deeds
-    (r'generateDeedCSV$', 'forestal2.fincas.views.generateDeedCSV'),
+    url(r'generateDeedCSV$', fincasviews.generateDeedCSV),
 
-    (r'exportGrid$', 'forestal2.empresas.views.exportgrid'),
+    url(r'exportGrid$', empresasviews.exportgrid),
 
-    (r'rewriteLandSize$', 'forestal2.fincas.views.rewriteLandSize'),
+    url(r'rewriteLandSize$', fincasviews.rewriteLandSize),
 
-    (r'^backup$', 'forestal2.empresas.views.backup'),
+    url(r'^backup$', empresasviews.backup),
 
-    (r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'),
+    # url(r'^admin_tools/', include('admin_tools.urls')),
 
-    (r'^admin_tools/', include('admin_tools.urls')),
-
-    (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-    {'document_root': settings.DOCUMENT_ROOT}),
+    url(r'^site_media/(?P<path>.*)$', static.serve,
+        {'document_root': settings.DOCUMENT_ROOT}),
 
 
     # Uncomment the next line to enable the admin:
-    (r'^', include(admin.site.urls))
+    path('/', admin.site.urls)
 
-)
+]
 
 """
 DEPRECATED

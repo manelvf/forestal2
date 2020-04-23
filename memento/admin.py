@@ -1,7 +1,7 @@
 from types import *
 from django.contrib import admin
 from django.core import serializers
-from forestal2.memento.models import Memento
+from memento.models import Memento
 
 
 def data_show(obj):
@@ -24,7 +24,7 @@ class MementoAdmin(admin.ModelAdmin):
         s = u""
         for o in serializers.deserialize("json",obj.data):
             names = o.object._meta.get_all_field_names()
-            print names
+            print(names)
             for k in names:
                 #if k[0:1] == "_": continue
                 #print k

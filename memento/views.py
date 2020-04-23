@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from types import *
 from random import randint, random
+from django.apps import apps
 from django.http import HttpResponse
-from django.db.models import get_app, get_models
 from django.forms.models import model_to_dict
 from django.db.models.fields import CharField, IntegerField, FloatField
 
@@ -17,14 +17,7 @@ def schred(request):
 
 
 def getModelList(app):
-    app = get_app(app)
-
-    models = get_models(app)
-
-    for model in models:
-        print model
-
-    return models
+    return apps.get_models()
 
 def schredModel(model):
     objects = model.objects.all();
@@ -49,7 +42,6 @@ def schredModel(model):
                         continue
                     s = s + c
 
-                print s
                 setattr(o, f.name, s)
 
             elif isinstance(f,IntegerField):

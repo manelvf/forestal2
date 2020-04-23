@@ -1,5 +1,5 @@
 from django.db import models
-from forestal2.settings import ENV_BASE_URL
+from settings import ENV_BASE_URL
 
 class PhoneBook(models.Model):
     number = models.CharField(max_length=255)
@@ -20,17 +20,17 @@ class TipoEmpresa(models.Model):
     name = models.CharField(max_length=255)
     def __unicode__(self):
         return self.name
-    
+
 
 class Empresa(models.Model):
     name = models.CharField(max_length=255)
     nif = models.CharField(max_length=25, blank=True)
     direccion = models.CharField(max_length=255, blank=True)
     cp = models.CharField(max_length=25, blank=True)
-    provincia = models.ForeignKey(Provincia)
+    provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE)
     telefonos = models.CharField(max_length=25, blank=True)
     obs = models.TextField(blank=True)
-    tipoempresa = models.ForeignKey(TipoEmpresa)
+    tipoempresa = models.ForeignKey(TipoEmpresa, on_delete=models.CASCADE)
     codigo_certificacion = models.CharField(max_length=255, blank=True)
 
     class Meta:
@@ -45,13 +45,13 @@ class Empleado(models.Model):
     apellido1 = models.CharField(max_length=25)
     apellido2 = models.CharField(max_length=25)
     nif = models.CharField(max_length=25)
-    empresa = models.ForeignKey(Empresa)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     def __unicode__(self):
         return self.name
 
 class Camion(models.Model):
     matricula = models.CharField(max_length=25)
-    empresa = models.ForeignKey(Empresa)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     def __unicode__(self):
         return self.empresa.name + " " + unicode(self.matricula)
 
@@ -61,12 +61,12 @@ class TipoOperacion(models.Model):
         return self.name
 
 class Factura(models.Model):
-    empresa = models.ForeignKey(Empresa, related_name="factura_empresa_set")
-    cliente = models.ForeignKey(Empresa, related_name="factura_cliente_set")
-    tipo = models.ForeignKey(TipoOperacion)
+    empresa = models.ForeignKey(Empresa, related_name="factura_empresa_set", on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Empresa, related_name="factura_cliente_set", on_delete=models.CASCADE)
+    tipo = models.ForeignKey(TipoOperacion, on_delete=models.CASCADE)
     numero = models.IntegerField()
     emision = models.DateField()
-    
+
     def get_parcelas(self):
         s = ""
 
@@ -81,27 +81,27 @@ class Factura(models.Model):
     get_parcelas.allow_tags=True
 
     def __unicode__(self):
-        return unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)  
+        return unicode(self.emision) + unicode(self.numero) + u" - " + unicode(self.empresa) + u" - " + unicode(self.cliente)
 
 
 class DetalleFactura(models.Model):
     #finca = models.ForeignKey("fincas.Finca", blank=True, null=True)
-    servizo = models.ForeignKey("fincas.Tala", blank=True, null=True)
+    servizo = models.ForeignKey("fincas.Tala", blank=True, null=True, on_delete=models.CASCADE)
     concepto = models.CharField(max_length=255, blank=True)
-    tipo_iva = models.ForeignKey("TipoIva",null=True, related_name="tipo_iva_set", blank=True)
-    tipo_irpf = models.ForeignKey("TipoIva", null=True, related_name="tipo_irpf_set", blank=True)
+    tipo_iva = models.ForeignKey("TipoIva",null=True, related_name="tipo_iva_set", blank=True, on_delete=models.CASCADE)
+    tipo_irpf = models.ForeignKey("TipoIva", null=True, related_name="tipo_irpf_set", blank=True, on_delete=models.CASCADE)
     cantidad = models.FloatField(blank=True)
     valor = models.FloatField(blank=True)
-    factura = models.ForeignKey(Factura)
+    factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
     def __unicode__(self):
         return unicode(self.servizo) + u" - " + unicode(self.concepto) + u"  Fac: " + unicode(self.factura)
 
     
 class Recibo(models.Model):
     numero = models.IntegerField()
-    empresa = models.ForeignKey(Empresa, related_name="recibo_empresa_set")
-    cliente = models.ForeignKey(Empresa, related_name="recibo_cliente_set")
-    tipo = models.ForeignKey(TipoOperacion)
+    empresa = models.ForeignKey(Empresa, related_name="recibo_empresa_set", on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Empresa, related_name="recibo_cliente_set", on_delete=models.CASCADE)
+    tipo = models.ForeignKey(TipoOperacion, on_delete=models.CASCADE)
     emision = models.DateField()
     def __unicode__(self):
         return unicode(self.numero)
@@ -111,12 +111,12 @@ class DetalleRecibo(models.Model):
     concepto = models.CharField(max_length=255)
     cantidad = models.FloatField()
     valor = models.FloatField()
-    recibo = models.ForeignKey(Factura)
+    recibo = models.ForeignKey(Factura, on_delete=models.CASCADE)
 
 class Talonario(models.Model):
 		recepcion = models.DateField(auto_now = True)
 		inicio = models.IntegerField(null=True)
 		fin = models.IntegerField(null=True)
 		PECL = models.BooleanField(default=True)
-		destino = models.ForeignKey(Empresa, null=True)
+		destino = models.ForeignKey(Empresa, null=True, on_delete=models.CASCADE)
 

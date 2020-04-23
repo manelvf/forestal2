@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 
-from forestal2.settings import ENV_BASE_URL
+from settings import ENV_BASE_URL
 
 # to activate your index dashboard add the following to your settings.py:
 #

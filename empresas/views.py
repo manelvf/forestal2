@@ -10,14 +10,13 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.template.loader import get_template
 from django.template import Context, RequestContext
-from django.shortcuts import render_to_response, redirect
-from django.core.urlresolvers import resolve
+from django.shortcuts import render, redirect
 from django.conf import settings
-from django.core import serializers, urlresolvers
+from django.core import serializers
 
-from forestal2.empresas.models import Empresa, Factura, DetalleFactura
-from forestal2.fincas.models import Tala
-from forestal2 import settings
+from empresas.models import Empresa, Factura, DetalleFactura
+from fincas.models import Tala
+import settings
 
 
 def EmpresaSelect(request):
@@ -29,7 +28,7 @@ def EmpresaSelect(request):
 
 
 def facturagridview(request):
-    return render_to_response("facturagridview.html",
+    return render(None, "facturagridview.html",
         locals(), context_instance = RequestContext(request) )
 
 
@@ -139,7 +138,6 @@ def adddetallefactura(request, id=None):
     df = DetalleFactura(factura=factura)
     df.save()
     return HttpResponse("OK")
-    #return redirect(urlresolvers.reverse('admin:empresas_detallefactura_change', args=(df.id,)))
 
 
 """
@@ -173,6 +171,5 @@ def backup(request):
   Spreadsheet export
 """
 def exportgrid(request):
-    print str(request.POST)
     return HttpResponse("")
 

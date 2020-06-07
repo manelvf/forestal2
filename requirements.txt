@@ -2,5 +2,6 @@ asgiref==3.2.7
 Django==3.0.5
 django-admin-tools==0.9.0
 pytz==2019.3
+South==1.0.2
 sqlparse==0.3.1
 suds-jurko==0.6

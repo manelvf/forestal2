@@ -279,7 +279,7 @@ class ViaxeCamion(models.Model):
     estereo = models.FloatField(null=True, blank=True)
     metrocubico = models.FloatField(null=True, blank=True)
     destino = models.ForeignKey(Empresa, null=True, blank=True, on_delete=models.CASCADE)
-    origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
+    origen = models.ManyToManyField('Tala', related_name="origen", blank=True, null=True)
     obs = models.TextField(blank=True)
 
     def get_permission(self):
@@ -370,7 +370,7 @@ class Tala(models.Model):
     condicions = models.ManyToManyField(CondicionCorta, blank=True, null=True)
 
     empresas = models.ManyToManyField(Empresa, blank=True, null=True)
-    viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
+    viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", blank=True, null=True)
     finca = models.ForeignKey(Finca, null=True, on_delete=models.CASCADE)
     tipo = models.ForeignKey(ServizoForestalTipo, on_delete=models.CASCADE)
     obs = models.TextField(blank=True)

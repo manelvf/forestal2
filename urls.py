@@ -77,13 +77,7 @@ urlpatterns = [
 
 
     # Uncomment the next line to enable the admin:
-    path('/', admin.site.urls)
+    path('', admin.site.urls)
 
 ]
 
-"""
-DEPRECATED
-urlpatterns += patterns('django.views.generic.simple',
-    (r'^$', 'direct_to_template', {'template': 'index.html'})
-)
-"""

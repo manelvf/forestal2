@@ -3,6 +3,5 @@ settings.py
 *.sw*
 *.json
 .backup
-oficina
-oficina.*
+montes.db
 

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forestal Management System</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body>
+    <div id="app"></div>
+    
+    <!-- CSRF Token for axios -->
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    
+    <!-- Vue.js App -->
+    <script type="module" src="/static/main.js"></script>
+</body>
+</html>

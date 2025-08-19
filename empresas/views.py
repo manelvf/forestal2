@@ -9,15 +9,14 @@ import subprocess
 from django.http import HttpResponse
 from django.db.models import Q
 from django.template.loader import get_template
-from django.template import Context, RequestContext
-from django.shortcuts import render_to_response, redirect
-from django.core.urlresolvers import resolve
+from django.shortcuts import render, redirect
+from django.urls import resolve
 from django.conf import settings
-from django.core import serializers, urlresolvers
+from django.core import serializers
 
-from forestal2.empresas.models import Empresa, Factura, DetalleFactura
-from forestal2.fincas.models import Tala
-from forestal2 import settings
+from empresas.models import Empresa, Factura, DetalleFactura
+from fincas.models import Tala
+from django.conf import settings
 
 
 def EmpresaSelect(request):
@@ -29,17 +28,17 @@ def EmpresaSelect(request):
 
 
 def facturagridview(request):
-    return render_to_response("facturagridview.html",
-        locals(), context_instance = RequestContext(request) )
+    return render(request, "facturagridview.html",
+        locals())
 
 
 def gridfactura(request):
 
-    if request.GET.has_key("page"):
+    if "page" in request.GET:
         page = int(request.GET["page"])
     else:
         page = 0
-    if request.GET.has_key("rows"):
+    if "rows" in request.GET:
         rows = int(request.GET["rows"])
     else:
         rows = 15
@@ -62,7 +61,7 @@ def gridfactura(request):
     """
     facturas = Factura.objects.order_by(sidx)
 
-    total = (len(facturas)/rows) + 1
+    total = (len(facturas)//rows) + 1
 
     rows = [] # result rows
 
@@ -82,11 +81,11 @@ def gridfactura(request):
 
 
 def griddetallefactura(request,id):
-    if request.GET.has_key("page"):
+    if "page" in request.GET:
         page = int(request.GET["page"])
     else:
         page = 0
-    if request.GET.has_key("rows"):
+    if "rows" in request.GET:
         rows = int(request.GET["rows"])
     else:
         rows = 15
@@ -109,7 +108,7 @@ def griddetallefactura(request,id):
     """
     detallefacturas = DetalleFactura.objects.filter(factura=id).order_by(sidx)
 
-    total = (len(detallefacturas)/rows) + 1
+    total = (len(detallefacturas)//rows) + 1
 
     rows = [] # result rows
 
@@ -163,7 +162,7 @@ def backup(request):
     try:
         r = subprocess.Popen(["./backup_db.sh", ], stdout=subprocess.PIPE, shell=True).communicate()[0]
     except:
-        return HttpResponse(u"<b>There was an error on the backup process</b>")
+        return HttpResponse("<b>There was an error on the backup process</b>")
         
     #r = subprocess.Popen(["./a.sh"], stdout=subprocess.PIPE, shell=True).communicate()[0]
     return HttpResponse(str(r) + "<p>Proceso completado")
@@ -173,6 +172,6 @@ def backup(request):
   Spreadsheet export
 """
 def exportgrid(request):
-    print str(request.POST)
+    print(str(request.POST))
     return HttpResponse("")
 

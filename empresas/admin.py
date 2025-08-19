@@ -1,7 +1,6 @@
 from django.contrib import admin
-from django.conf.urls.defaults import *
 
-from forestal2.empresas.models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva, Talonario, PhoneBook
+from .models import TipoEmpresa, Empresa, Empleado, Camion, TipoOperacion, Factura, DetalleFactura, Recibo, DetalleRecibo, Provincia,TipoIva, Talonario, PhoneBook
 
 class PhoneBookAdmin(admin.ModelAdmin):
     list_display = ('number', 'name', )
@@ -51,19 +50,4 @@ admin.site.register(DetalleRecibo)
 admin.site.register(Provincia)
 admin.site.register(TipoIva)
 admin.site.register(Talonario, TalonarioAdmin)
-
-
-from django.contrib import databrowse
-
-databrowse.site.register(TipoEmpresa)
-databrowse.site.register(Empresa)
-databrowse.site.register(Empleado)
-databrowse.site.register(Camion)
-databrowse.site.register(TipoOperacion)
-databrowse.site.register(Factura)
-databrowse.site.register(DetalleFactura)
-databrowse.site.register(Recibo)
-databrowse.site.register(DetalleRecibo)
-databrowse.site.register(Provincia)
-databrowse.site.register(TipoIva)
 

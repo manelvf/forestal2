@@ -4,85 +4,85 @@ from pprint import pprint
 import datetime
 
 from django.core import serializers
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_str
 from django.db import models
 from django import forms
 from django.contrib.admin import widgets
 
-from forestal2.empresas.models import Empresa, Camion
-from forestal2.settings import ENV_BASE_URL
+from empresas.models import Empresa, Camion
+from django.conf import settings
 
 class Unidade(models.Model):
     name = models.CharField(max_length=50)
     abrv = models.CharField(max_length=10)
-    def __unicode__(self):
+    def __str__(self):
         return self.abrv or ""
 
 class Provincia(models.Model):
 		name = models.CharField(max_length=255, null=True, blank=True)
 		code = models.CharField(max_length=5, null=True, blank=True, default="")
-		def __unicode__(self):
-				return (unicode(self.name) + u"-" + unicode(self.code)) or ""
+		def __str__(self):
+				return (str(self.name) + "-" + str(self.code)) or ""
 
 class Concello(models.Model):
     name = models.CharField(max_length=255)
-    provincia = models.ForeignKey(Provincia, null=True, blank=True)
-    def __unicode__(self):
-        return (unicode(self.name) + u"-" + unicode(self.provincia)) or ""
+    provincia = models.ForeignKey(Provincia, null=True, blank=True, on_delete=models.CASCADE)
+    def __str__(self):
+        return (str(self.name) + "-" + str(self.provincia)) or ""
 
 class Parroquia(models.Model):
     name = models.CharField(max_length=255)
-    concello = models.ForeignKey(Concello)
-    def __unicode__(self):
-        return self.name + ", " + unicode(self.concello)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name + ", " + str(self.concello)
 
 class Lugar(models.Model):
     name = models.CharField(max_length=255)
-    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
-    concello = models.ForeignKey(Concello)
-    def __unicode__(self):
-        return self.name + u", " + unicode(self.parroquia) 
+    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="", on_delete=models.CASCADE)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name + ", " + str(self.parroquia) 
     
 class ModeloForestal(models.Model):
     name = models.CharField(max_length=100)
     obs = models.TextField()
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     class Meta:
         verbose_name = "Modelo Forestal"
 
 
 class Monte(models.Model):
-    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="")
-    concello = models.ForeignKey(Concello)
-    lugar = models.ForeignKey(Lugar,blank=True)
+    parroquia = models.ForeignKey(Parroquia, blank=True, null=True, default="", on_delete=models.CASCADE)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
+    lugar = models.ForeignKey(Lugar,blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True, default="")
     number = models.IntegerField(blank=True, null=True)
 
-    def __unicode__(self):
-        return unicode(self.number) + u':' + unicode(self.name)
+    def __str__(self):
+        return str(self.number) + ':' + str(self.name)
 
 
 class BorderFinca(models.Model):
-    concello = models.ForeignKey(Concello,blank=True)
-    lugar = models.ForeignKey(Lugar,blank=True,null=True, default=None)
+    concello = models.ForeignKey(Concello,blank=True, on_delete=models.CASCADE)
+    lugar = models.ForeignKey(Lugar,blank=True,null=True, default=None, on_delete=models.CASCADE)
     poligon = models.IntegerField(blank=True, null=True, default=None)
     parcela = models.IntegerField(blank=True, null=True, default=None)
     agregado = models.IntegerField(blank=True, null=True, default=None)
     zona = models.IntegerField(blank=True, null=True, default=None)
     ref_catastral = models.CharField(max_length=255, default="", blank=True, null=True)
     obs = models.TextField(blank=True)
-    def __unicode__(self):
-        c = unicode(u'' if not hasattr(self, 'concello') else 
+    def __str__(self):
+        c = str('' if not hasattr(self, 'concello') else 
                     self.concello if not hasattr(self.concello, 'name') else
                     self.concello.name)
 
-        return (#unicode(self.concello.name) + u' Pol:' +
+        return (#str(self.concello.name) + ' Pol:' +
                 c +
-                unicode(self.poligon) + u' Par:' +
-                unicode(u'' if not hasattr(self, 'parcela') else self.parcela) +
-		unicode(' : ') +
-                unicode(self.ref_catastral))
+                str(self.poligon) + ' Par:' +
+                str('' if not hasattr(self, 'parcela') else self.parcela) +
+		str(' : ') +
+                str(self.ref_catastral))
 
 
 # Deed options
@@ -95,25 +95,25 @@ DEED_TYPES= (
 
 
 class DeedSellers(models.Model):
-    deed = models.ForeignKey('Deed')
-    empresa = models.ForeignKey(Empresa)
+    deed = models.ForeignKey('Deed', on_delete=models.CASCADE)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
 
 
 class Deed(models.Model):
     date = models.DateField(blank=True)
     number = models.IntegerField()
-    buyer =  models.ForeignKey(Empresa, related_name='buyer')
+    buyer =  models.ForeignKey(Empresa, related_name='buyer', on_delete=models.CASCADE)
     sellers = models.ManyToManyField(Empresa, through='DeedSellers',
-            null=True, related_name='sellers')
-    fincas = models.ManyToManyField('Finca', through='DeedFinca', null=True)
+            related_name='sellers')
+    fincas = models.ManyToManyField('Finca', through='DeedFinca')
     price = models.FloatField(blank=True, null=True)
     deedType = models.IntegerField(choices=DEED_TYPES, default=COMPRAVENTA)
     obs = models.TextField(blank=True)
 
     inscription = models.TextField(blank=True) # text for property register inscription
 
-    def __unicode__(self):
-        return unicode(self.number) + u' ' + unicode(self.fincas.all())
+    def __str__(self):
+        return str(self.number) + ' ' + str(self.fincas.all())
 
 
 class EventFincaType(models.Model):
@@ -123,46 +123,46 @@ class EventFincaType(models.Model):
 
 
 class EventFinca(models.Model):
-    empresa = models.ForeignKey(Empresa, blank=True)
+    empresa = models.ForeignKey(Empresa, blank=True, on_delete=models.CASCADE)
     date = models.DateField(blank=True)
     obs = models.TextField(blank=True)
-    eventType = models.ForeignKey(EventFincaType)
+    eventType = models.ForeignKey(EventFincaType, on_delete=models.CASCADE)
 
 
 class EventFincaTimeline(models.Model):
-    eventfinca = models.ForeignKey(EventFinca)
-    finca = models.ForeignKey('Finca')
+    eventfinca = models.ForeignKey(EventFinca, on_delete=models.CASCADE)
+    finca = models.ForeignKey('Finca', on_delete=models.CASCADE)
 
 
 class EventFincaLog(models.Model):
-    eventfinca = models.ForeignKey(EventFinca)
-    finca = models.ForeignKey('Finca')
+    eventfinca = models.ForeignKey(EventFinca, on_delete=models.CASCADE)
+    finca = models.ForeignKey('Finca', on_delete=models.CASCADE)
 
 
 class Finca(models.Model):
-    concello = models.ForeignKey(Concello)
-    lugar = models.ForeignKey(Lugar,blank=True,null=True)
+    concello = models.ForeignKey(Concello, on_delete=models.CASCADE)
+    lugar = models.ForeignKey(Lugar,blank=True,null=True, on_delete=models.CASCADE)
     poligon = models.IntegerField()
     parcela = models.IntegerField()
     agregado = models.IntegerField(blank=True)
     zona = models.IntegerField(blank=True)
-    monte = models.ForeignKey(Monte,blank=True,null=True)
+    monte = models.ForeignKey(Monte,blank=True,null=True, on_delete=models.CASCADE)
     superficie = models.FloatField(blank=True)
     codigo_ref = models.CharField(max_length=255, default="", blank=True)
     ref_catastral = models.CharField(max_length=255, default="", blank=True)
-    pasado = models.NullBooleanField()
+    pasado = models.BooleanField(null=True, blank=True)
     obs = models.TextField(blank=True)
     property_title = models.TextField(blank=True)
-    modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal")
+    modeloforestal = models.ForeignKey(ModeloForestal, verbose_name = "Modelo Forestal", on_delete=models.CASCADE)
     fecha_plantacion = models.DateField(blank=True)
     densidad = models.FloatField(blank=True)
     ha_matorral = models.FloatField(blank=True)
     ha_prado = models.FloatField(blank=True)
     ha_construidas = models.FloatField(blank=True)
     ha_total = models.FloatField(blank=True)
-    dono = models.ForeignKey(Empresa, related_name="finca_dono_set")
-    empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set")
-    unidade = models.ForeignKey(Unidade,blank=True,null=True)
+    dono = models.ForeignKey(Empresa, related_name="finca_dono_set", on_delete=models.CASCADE)
+    empresa = models.ForeignKey(Empresa, related_name="finca_empresa_set", on_delete=models.CASCADE)
+    unidade = models.ForeignKey(Unidade,blank=True,null=True, on_delete=models.CASCADE)
     paraje_catastral = models.CharField(max_length=255, default="", blank=True)
     cultivo_catastral = models.CharField(max_length=255, default="", blank=True)
     intensidad_catastral = models.CharField(max_length=255, default="", blank=True)
@@ -181,14 +181,14 @@ class Finca(models.Model):
         verbose_name = "Parcela"
         unique_together = ("concello", "poligon", "parcela", "zona")
 
-    def __unicode__(self):
+    def __str__(self):
         s = ""
         """
         if self.concello is not None:
             s += self.concello.name + " - "
 
         if self.lugar:
-            s += " Parroquia: " + unicode(self.lugar.parroquia) + " Lugar: " + unicode(self.lugar.name) + " . "
+            s += " Parroquia: " + str(self.lugar.parroquia) + " Lugar: " + str(self.lugar.name) + " . "
         """
 
         return str(self.pk) + " Pol: " + str(self.poligon) + ", Par:" +str(self.parcela)
@@ -231,55 +231,55 @@ RELATIONSHIP_STATUSES = (
 
 
 class Border(models.Model):
-    borderFinca = models.ForeignKey(BorderFinca)
-    finca = models.ForeignKey(Finca)
+    borderFinca = models.ForeignKey(BorderFinca, on_delete=models.CASCADE)
+    finca = models.ForeignKey(Finca, on_delete=models.CASCADE)
     owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
 
 class DeedFinca(models.Model):
-    deed = models.ForeignKey(Deed)
-    finca = models.ForeignKey(Finca)
+    deed = models.ForeignKey(Deed, on_delete=models.CASCADE)
+    finca = models.ForeignKey(Finca, on_delete=models.CASCADE)
 
 
 class Relationship(models.Model):
     # Relations between parcels
-    from_parcel = models.ForeignKey(Finca, related_name='from_parcel')
-    to_parcel = models.ForeignKey(Finca, related_name='to_parcel')
+    from_parcel = models.ForeignKey(Finca, related_name='from_parcel', on_delete=models.CASCADE)
+    to_parcel = models.ForeignKey(Finca, related_name='to_parcel', on_delete=models.CASCADE)
 
     owner = models.IntegerField(choices=RELATIONSHIP_STATUSES)
 
 
 class ServizoForestalTipo(models.Model):
     name = models.CharField(max_length=100)
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 
 class Certificacion(models.Model):
-    finca = models.ForeignKey(Finca, null=True)
+    finca = models.ForeignKey(Finca, null=True, on_delete=models.CASCADE)
     envio_documentacion = models.DateField()
     aprobacion = models.DateField();
-    def __unicode__(self):
-        return unicode(self.finca) + " // Envio: " + unicode(self.envio_documentacion) + " // Aprobacion: " + unicode(self.aprobacion)
+    def __str__(self):
+        return str(self.finca) + " // Envio: " + str(self.envio_documentacion) + " // Aprobacion: " + str(self.aprobacion)
 
 
 class Especie(models.Model):
     name = models.CharField(max_length=100)
     codigo = models.CharField(max_length=100)
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class ViaxeCamion(models.Model):
-    n_talonario = models.PositiveIntegerField(null=True, blank=True, verbose_name=u"Nº talonario")
+    n_talonario = models.PositiveIntegerField(null=True, blank=True, verbose_name="Nº talonario")
     dia = models.DateField(null=True, blank=True)
-    camion = models.ForeignKey(Camion,null=True, blank=True)
+    camion = models.ForeignKey(Camion,null=True, blank=True, on_delete=models.CASCADE)
     tm = models.FloatField(null=True, blank=True)
     estereo = models.FloatField(null=True, blank=True)
     metrocubico = models.FloatField(null=True, blank=True)
-    destino = models.ForeignKey(Empresa, null=True, blank=True)
-    origen = models.ManyToManyField('Tala', related_name="origen", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
+    destino = models.ForeignKey(Empresa, null=True, blank=True, on_delete=models.CASCADE)
+    origen = models.ManyToManyField('Tala', related_name="origen", db_table='fincas_viaxecamion_origen', blank=True)
     obs = models.TextField(blank=True)
 
     def get_permission(self):
@@ -287,69 +287,69 @@ class ViaxeCamion(models.Model):
 
         k = self.origen.all()
         if len(k) > 0:
-            s = unicode(k[0].permiso)
+            s = str(k[0].permiso)
 
         return s
 
-    get_permission.short_description = u"Data Permiso"
+    get_permission.short_description = "Data Permiso"
 
     def get_concello(self):
         s = ""
 
         k = self.origen.all()
         if len(k) > 0:
-            s = unicode(k[0].finca.concello)
+            s = str(k[0].finca.concello)
 
         return s
 
-    get_concello.short_description = u"Concello"
+    get_concello.short_description = "Concello"
 
     def get_poligon(self):
         s = ""
 
         k = self.origen.all()
         if len(k) > 0:
-            s = unicode(k[0].finca.poligon)
+            s = str(k[0].finca.poligon)
 
         return s
 
-    get_poligon.short_description = u"Poligono"
+    get_poligon.short_description = "Poligono"
 
     def get_parcela(self):
         s = ""
 
         k = self.origen.all()
         if len(k) > 0:
-            s = unicode(k[0].finca.parcela)
+            s = str(k[0].finca.parcela)
 
         return s
 
-    get_parcela.short_description = u"Parcela"
+    get_parcela.short_description = "Parcela"
 
     def get_monte(self):
         s = ""
 
         k = self.origen.all()
         if len(k) > 0:
-            s = unicode(k[0].finca.monte)
+            s = str(k[0].finca.monte)
             if s == "None":
                 s = ""
 
         return s
 
-    get_monte.short_description = u"Monte"
+    get_monte.short_description = "Monte"
 
 
-    def __unicode__(self):
-        #return unicode(self.dia) + " " + unicode(self.camion) + " - Tm: " + unicode(self.tm)
-        return unicode(self.pk) + u" - " + unicode(self.dia) + " " + " - Tm: " + unicode(self.tm)
+    def __str__(self):
+        #return str(self.dia) + " " + str(self.camion) + " - Tm: " + str(self.tm)
+        return str(self.pk) + " - " + str(self.dia) + " " + " - Tm: " + str(self.tm)
 
 
 class TipoCorta(models.Model):
-		name = models.CharField(max_length=100, blank=True, verbose_name = u"Tipo de corta")
+		name = models.CharField(max_length=100, blank=True, verbose_name = "Tipo de corta")
 
 class CondicionCorta(models.Model):
-		name = models.CharField(max_length=100, blank=True, verbose_name = u"Condicion")
+		name = models.CharField(max_length=100, blank=True, verbose_name = "Condicion")
     
 # Formerly Permiso Forestal
 class Tala(models.Model):
@@ -359,46 +359,46 @@ class Tala(models.Model):
     entradaGrupo = models.DateField(blank=True)
     codigoPECL = models.CharField(max_length=100, blank=True)
     dataPECL = models.DateField(blank=True)
-    codigoNORFOR = models.CharField(max_length=100, blank=True, verbose_name=u"NORFOR")
-    dataPECLsaida = models.DateField(blank=True, null=True, verbose_name=u"Alb. Saida PECL")
+    codigoNORFOR = models.CharField(max_length=100, blank=True, verbose_name="NORFOR")
+    dataPECLsaida = models.DateField(blank=True, null=True, verbose_name="Alb. Saida PECL")
 
-    tm_permiso = models.FloatField(verbose_name=u"Pes permiso", blank=True, default=0)
-    m2_permiso = models.FloatField(verbose_name=u"m3 permiso", default=0)
+    tm_permiso = models.FloatField(verbose_name="Pes permiso", blank=True, default=0)
+    m2_permiso = models.FloatField(verbose_name="m3 permiso", default=0)
     altura = models.IntegerField(default=0, null=True,blank=True)
 
-    tipocorta = models.ForeignKey(TipoCorta, null=True, blank=True)
-    condicions = models.ManyToManyField(CondicionCorta, blank=True, null=True)
+    tipocorta = models.ForeignKey(TipoCorta, null=True, blank=True, on_delete=models.CASCADE)
+    condicions = models.ManyToManyField(CondicionCorta, blank=True)
 
-    empresas = models.ManyToManyField(Empresa, blank=True, null=True)
-    viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table=u'fincas_tala_viaxecamions', blank=True, null=True)
-    finca = models.ForeignKey(Finca, null=True)
-    tipo = models.ForeignKey(ServizoForestalTipo)
+    empresas = models.ManyToManyField(Empresa, blank=True)
+    viaxecamions = models.ManyToManyField(ViaxeCamion, related_name="viaxecamions", db_table='fincas_tala_viaxecamions', blank=True)
+    finca = models.ForeignKey(Finca, null=True, on_delete=models.CASCADE)
+    tipo = models.ForeignKey(ServizoForestalTipo, on_delete=models.CASCADE)
     obs = models.TextField(blank=True)
     
     def get_viaxes(self):
         n = self.viaxecamions.exclude(camion__exact=None)
         v = self.viaxecamions.all()
 
-        return unicode(u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' +
-               unicode(len(n)) + u'</a>' +
-							 u'/' +
-               u'<a href="' + ENV_BASE_URL + '/listaviaxes/' + unicode(self.id) + '" >' +
-               unicode(len(v)) + u'</a>')
+        return str('<a href="' + settings.ENV_BASE_URL + '/listaviaxes/' + str(self.id) + '" >' +
+               str(len(n)) + '</a>' +
+							 '/' +
+               '<a href="' + settings.ENV_BASE_URL + '/listaviaxes/' + str(self.id) + '" >' +
+               str(len(v)) + '</a>')
 
-    get_viaxes.short_description = u'N Viaxes'
+    get_viaxes.short_description = 'N Viaxes'
     get_viaxes.allow_tags = True
 
 
     class Meta:
         verbose_name = "Servizo Forestal"
-    def __unicode__(self):
+    def __str__(self):
         if len(self.codigoPECL) > 0:
-            pecl = u'S'
+            pecl = 'S'
         else:
-            pecl = u'N'
+            pecl = 'N'
 
-        #return unicode(self.tipo) + u" - " + unicode(self.finca) + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl + u'. NORFOR: ' + unicode(self.codigoNORFOR)
-        return unicode(self.pk) + u" - " + u" / desde " + unicode(self.comezo) + " ata " + unicode (self.final) + ". Permiso: " + unicode(self.permiso) + u'. PECL: ' + pecl + u'. NORFOR: ' + unicode(self.codigoNORFOR)
+        #return str(self.tipo) + " - " + str(self.finca) + " / desde " + str(self.comezo) + " ata " + str (self.final) + ". Permiso: " + str(self.permiso) + '. PECL: ' + pecl + '. NORFOR: ' + str(self.codigoNORFOR)
+        return str(self.pk) + " - " + " / desde " + str(self.comezo) + " ata " + str (self.final) + ". Permiso: " + str(self.permiso) + '. PECL: ' + pecl + '. NORFOR: ' + str(self.codigoNORFOR)
 
 
 class TalaForm(forms.ModelForm):
@@ -406,14 +406,15 @@ class TalaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TalaForm, self).__init__(*args, **kwargs)
         
-	"""
-        if self.initial.has_key('comezo'):
+        """
+        if 'comezo' in self.initial:
             self.fields['viaxecamions'].queryset =  ViaxeCamion.objects.filter(dia__gte = self.initial['comezo'])
 
-	"""
+        """
 
     class Meta:
         model = Tala
+        fields = '__all__'
 
 
 class DateRange(models.Model):
@@ -426,6 +427,7 @@ class DateRangeForm(forms.ModelForm):
 
     class Meta:
         model = DateRange
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(DateRangeForm, self).__init__(*args, **kwargs)

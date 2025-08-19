@@ -8,10 +8,8 @@ import datetime
 from django.http import HttpResponse
 from django.db.models import Q
 from django.template.loader import get_template
-from django.template import Context
-from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.core.urlresolvers import resolve
+from django.shortcuts import render
+from django.urls import resolve
 from django.conf import settings
 from django.core import serializers
 from django.utils.html import escape
@@ -20,16 +18,16 @@ from django.forms import ModelForm
 from django.contrib.admin import widgets
 from django.contrib.admin.views.decorators import staff_member_required
 
-from suds import WebFault
-from suds.client import Client
+# from suds import WebFault  # Commented out - will install later
+# from suds.client import Client  # Commented out - will install later
 
-from forestal2.fincas.models import (Finca, ViaxeCamion, Tala, 
+from fincas.models import (Finca, ViaxeCamion, Tala, 
     Deed, DeedSellers, DeedFinca,
     DateRange, DateRangeForm)
-from forestal2.empresas.models import Empresa
+from empresas.models import Empresa
 
 
-jsFiles = [settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js"]
+jsFiles = [settings.STATIC_URL + "admin/js/jquery.min.js"]
 
 
 """
@@ -44,8 +42,8 @@ def homogeneidade(request, restriction):
       if str(e.tipoempresa) == "Transporte":
         empresasText += str(e.pk) + ':' + e.name +";"
       
-    return render_to_response("homogeneidade.html",
-        locals(), context_instance = RequestContext(request) )
+    return render(request, "homogeneidade.html",
+        locals())
 
   
 """
@@ -54,15 +52,15 @@ servizos grid view
 @staff_member_required
 def servizogridview(request):
 
-    return render_to_response("servizogridview.html",
-        locals(), context_instance = RequestContext(request) )
+    return render(request, "servizogridview.html",
+        locals())
 
 
 def assignfinca(request, id):
     viaxe = ViaxeCamion.objects.get(pk=id)
 
-    return render_to_response("assignfinca.html",
-        locals(), context_instance = RequestContext(request) )
+    return render(request, "assignfinca.html",
+        locals())
 
 
 """
@@ -71,11 +69,11 @@ Grid de servizos forestais
 
 def grid(request):
     
-    if request.GET.has_key("page"):
+    if "page" in request.GET:
         page = int(request.GET["page"])
     else:
         page = 0
-    if request.GET.has_key("rows"):
+    if "rows" in request.GET:
         rows = int(request.GET["rows"])
     else:
         rows = 15
@@ -98,7 +96,7 @@ def grid(request):
     else:
         talas = Tala.objects.order_by(sidx)
 
-    total = (len(talas)/rows) + 1
+    total = (len(talas)//rows) + 1
 
     rows = [] # result rows
 
@@ -145,11 +143,11 @@ Grid de fincas
 
 def gridfinca(request):
     
-    if request.GET.has_key("page"):
+    if "page" in request.GET:
         page = int(request.GET["page"])
     else:
         page = 0
-    if request.GET.has_key("rows"):
+    if "rows" in request.GET:
         rows = int(request.GET["rows"])
     else:
         rows = 15
@@ -169,7 +167,7 @@ def gridfinca(request):
     else:
         fincas = Finca.objects.order_by(sidx)
 
-    total = (len(fincas)/rows) + 1
+    total = (len(fincas)//rows) + 1
 
     rows = [] # result rows
 
@@ -223,21 +221,21 @@ def gridviaxe(request, servizo=None):
 
     viaxes = viaxes.order_by(sidx)
 
-    total = (len(viaxes)/rows) + 1
+    total = (len(viaxes)//rows) + 1
 
     rows = []
     for v in viaxes[start:end]:
-        s = u""
+        s = ""
         last_origin_pk = 0
         for o in v.origen.all():
-            s += unicode(o.finca.concello.name) + u": " + unicode(o.finca.poligon) + u"-" + unicode(o.finca.parcela)
+            s += str(o.finca.concello.name) + ": " + str(o.finca.poligon) + "-" + str(o.finca.parcela)
             last_origin_pk = o.pk
 
         if len(v.obs) > 0:
             obs = "S"
         else:
             obs = ""
-        rows.append({"id":v.id,"cell":[v.pk, unicode(v.dia), unicode(v.camion), v.tm, s, unicode(v.destino), v.n_talonario, obs, last_origin_pk]})
+        rows.append({"id":v.id,"cell":[v.pk, str(v.dia), str(v.camion), v.tm, s, str(v.destino), v.n_talonario, obs, last_origin_pk]})
 
 
     r = {
@@ -278,14 +276,14 @@ def gridSearch(request, model, sidx=None):
     for r in rules:
         try:
             d = float(r["data"])
-            d = unicode(d)
+            d = str(d)
         except ValueError:
             d = "'" + escape(r["data"]) + "'" 
 
         if r["op"] == "eq":
-            query_filters.append('Q(' + r["field"] + u"=" + d + ')')
+            query_filters.append('Q(' + r["field"] + "=" + d + ')')
         else :
-            query_filters.append('Q(' + r["field"] + u"__" + r["op"] + u"=" + d + ')')
+            query_filters.append('Q(' + r["field"] + "__" + r["op"] + "=" + d + ')')
 
     objs = model.objects.all()
 
@@ -293,7 +291,7 @@ def gridSearch(request, model, sidx=None):
     if filters["groupOp"] == "OR":
         objs = eval("objs.filter(" + " | ".join(query_filters) + ")")
     else:
-        print "objs.filter(" + ", ".join(query_filters) + ")"
+        print("objs.filter(" + ", ".join(query_filters) + ")")
         objs = eval("objs.filter(" + ", ".join(query_filters) + ")")
 
     if sidx:
@@ -355,7 +353,7 @@ def joinviaxefinca(request):
         viaxe.origen.clear()
 
     except:
-      print "Unexpected error:", sys.exc_info()[0]
+      print("Unexpected error:", sys.exc_info()[0])
       return HttpResponse("FAIL")
 
     return HttpResponse("OK")
@@ -367,8 +365,8 @@ def listaviaxes(request, id):
 
     listaCamions = v
 
-    return render_to_response("homogeneidade.html",
-        {"listaCamions":listaCamions, "s":s} )
+    return render(request, "homogeneidade.html",
+        {"listaCamions":listaCamions, "s":s})
 
 
 
@@ -378,26 +376,26 @@ def queryland(request, provincia, concello, pol, par):
     try:
       client = Client(url)
       finca = client.service.Consulta_DNPPP(provincia,concello,pol,par)
-    except WebFault,e:
-      return render_to_response("WDSLerror.html",
-          {"text":unicode(e)})
+    except WebFault as e:
+      return render(request, "WDSLerror.html",
+          {"text":str(e)})
     except Exception:
-      print "Unexpected error:", sys.exc_info()[0]
+      print("Unexpected error:", sys.exc_info()[0])
       raise
       
     try:
       nOfItems = int(finca.control.cudnp)
     except AttributeError:
-      return render_to_response("WDSLerror.html",
-          {"text":u"Non se atopou a parcela"})
+      return render(request, "WDSLerror.html",
+          {"text":"Non se atopou a parcela"})
 
     if nOfItems == 1:
       refCatastral = finca.bico.bi.idbi.rc.pc1 + finca.bico.bi.idbi.rc.pc2 + finca.bico.bi.idbi.rc.car + finca.bico.bi.idbi.rc.cc1 + finca.bico.bi.idbi.rc.cc2 
     else:
-      refCatastral = u""
+      refCatastral = ""
 
     
-    return render_to_response("queryland.html",
+    return render(request, "queryland.html",
         {"finca":finca, "refCatastral":refCatastral, "jsFiles":jsFiles, "nOfItems":nOfItems,
         "provincia":provincia, "concello":concello})
 
@@ -412,18 +410,18 @@ def querylandsimple(provincia, concello, pol, par):
     try:
       client = Client(url)
       finca = client.service.Consulta_DNPPP(provincia,concello,pol,par)
-    except WebFault,e:
-      return render_to_response("WDSLerror.html",
-          {"text":unicode(e)})
+    except WebFault as e:
+      return render(request, "WDSLerror.html",
+          {"text":str(e)})
     except Exception:
-      print "Unexpected error:", sys.exc_info()[0]
+      print("Unexpected error:", sys.exc_info()[0])
       raise
       
     try:
       nOfItems = int(finca.control.cudnp)
     except AttributeError:
-      return render_to_response("WDSLerror.html",
-          {"text":u"Non se atopou a parcela"})
+      return render(request, "WDSLerror.html",
+          {"text":"Non se atopou a parcela"})
 
     if nOfItems == 1:
       refCatastral = finca.bico.bi.idbi.rc.pc1 + finca.bico.bi.idbi.rc.pc2 + finca.bico.bi.idbi.rc.car + finca.bico.bi.idbi.rc.cc1 + finca.bico.bi.idbi.rc.cc2 
@@ -431,12 +429,12 @@ def querylandsimple(provincia, concello, pol, par):
       try:
           return (finca.bico.bi.dt.locs.lors.lorus.npa, finca.bico.lspr.spr.dspr.ssp, refCatastral,)
       except AttributeError:
-          print dir(finca)
+          print(dir(finca))
           return (None,None,None,)
 
 
     else:
-      refCatastral = u""
+      refCatastral = ""
       return (None,None,None,)
 
 
@@ -447,31 +445,31 @@ def querycatastral(request, provincia, concello, ref_catastral):
     try:
       client = Client(url)
       finca = client.service.Consulta_DNPRC(provincia,concello,ref_catastral)
-    except WebFault,e:
-      return render_to_response("WDSLerror.html",
-          {"text":unicode(e)})
+    except WebFault as e:
+      return render(request, "WDSLerror.html",
+          {"text":str(e)})
 
 
-    return render_to_response("queryland.html",
+    return render(request, "queryland.html",
         {"finca":finca, "refCatastral":ref_catastral, "jsFiles":jsFiles, "nOfItems":1,
         "provincia":provincia, "concello":concello})
     
 
 
 def cell(s):
-    t = u""
+    t = ""
     for k in s:
-        t += u"<td>" + unicode(k) + u"</td>"
+        t += "<td>" + str(k) + "</td>"
 
     return t
 
 def cleanNone(v):
     if v is None:
-        return u""
+        return ""
     elif v == 'None':
-        return u""
+        return ""
     else: 
-        return unicode(v)
+        return str(v)
 
 def cleanZero(v):
     if v is None:
@@ -486,10 +484,10 @@ def generateDeedCSV(request):
     """
     generates a CSV file on django folder with deed information
     """
-    s = u""
+    s = ""
 
-    f = (u"Fincas-" + unicode(datetime.date.today()) + u"-" 
-        + unicode(int(time.time())) + u".csv")
+    f = ("Fincas-" + str(datetime.date.today()) + "-" 
+        + str(int(time.time())) + ".csv")
 
     f = "output.csv"
     writer = csv.writer(open(f, "wb"), dialect = csv.excel) 
@@ -508,34 +506,34 @@ def generateDeedCSV(request):
     ha_acum = 0
     deeds = Deed.objects.all()
     for d in deeds: 
-        #s += unicode(d.date) + u"\n"
+        #s += str(d.date) + "\n"
         for f in d.fincas.all():
 
             if d.deedType == 1:
                 sellers = d.sellers.all()
                 sellers = [k.name for k in sellers]
-                dt = unicode("Adquirido por compraventa a " + ",".join(sellers) +
-                     " en fecha " + unicode(d.date))
+                dt = str("Adquirido por compraventa a " + ",".join(sellers) +
+                     " en fecha " + str(d.date))
             else:
                 dt = "Adquirido por herencia"
 
-            l = ["poligono " + unicode(b.poligon) +
-                              " parcela " + unicode(b.parcela)
+            l = ["poligono " + str(b.poligon) +
+                              " parcela " + str(b.parcela)
                               for b in f.borders.all()
                               if b.poligon is not None]
-            db = u"Limita con parcelas: " + u", ".join(l)
+            db = "Limita con parcelas: " + ", ".join(l)
 
             s = ( 
-                unicode(f.paraje_catastral),
-                unicode(f.ref_catastral),
-                unicode(f.concello),
-                unicode(f.poligon),
-                unicode(f.parcela),
-                cleanZero(unicode(f.agregado)),
-                cleanZero(unicode(f.zona)),
-                unicode(f.ha_total),
-                unicode(dt),
-                unicode(db)
+                str(f.paraje_catastral),
+                str(f.ref_catastral),
+                str(f.concello),
+                str(f.poligon),
+                str(f.parcela),
+                cleanZero(str(f.agregado)),
+                cleanZero(str(f.zona)),
+                str(f.ha_total),
+                str(dt),
+                str(db)
                 )
 
             s = map(cleanNone, s)
@@ -545,7 +543,7 @@ def generateDeedCSV(request):
             writer.writerow(s)
 
             ha_acum += f.ha_total
-    print d.id
+    print(d.id)
         
 
     s = "Total: " + str(ha_acum) + " m2"
@@ -568,7 +566,7 @@ def rewriteLandSize(request):
             name, surface, refCatastral = datos
 
             if name is not None and surface is not None:
-                print name + '-' + surface + '-' + refCatastral
+                print(name + '-' + surface + '-' + refCatastral)
                 f.paraje_catastral = name.encode('utf-8')
                 f.ha_total = surface
                 f.ref_catastral = refCatastral
@@ -585,8 +583,8 @@ def weightActions(request):
 
     form = DateRangeForm()
 
-    return render_to_response("weightActions.html",
-        locals(), context_instance = RequestContext(request) )
+    return render(request, "weightActions.html",
+        locals())
 
 
 @staff_member_required
@@ -596,5 +594,5 @@ def weightActionsOutput(request):
     viaxes = (ViaxeCamion.objects.filter(dia__gte = post['comezo'])
     .filter(dia__lte = post['final']))
 
-    return render_to_response("weightActionsOutput.html",
-        locals(), context_instance = RequestContext(request) )
+    return render(request, "weightActionsOutput.html",
+        locals())

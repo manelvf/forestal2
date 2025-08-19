@@ -5,4 +5,6 @@ settings.py
 .backup
 oficina
 oficina.*
+*.sqlite3
+node_modules/
 

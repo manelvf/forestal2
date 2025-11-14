@@ -1,0 +1,7 @@
+[bandit]
+exclude_dirs = ['/test', 'tests', 'migrations', 'venv', 'env', 'virtualenv', 'node_modules']
+skips = []
+
+# B101: Test for use of assert
+# B601: paramiko calls (if you use paramiko, you may want to skip this)
+tests = []

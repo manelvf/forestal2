@@ -1,0 +1,78 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: forestal_test
+          POSTGRES_USER: forestal
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install coverage
+
+    - name: Copy settings file
+      run: |
+        cp settings.example.py settings.py
+
+    - name: Run migrations
+      env:
+        SECRET_KEY: test-secret-key-for-ci-only-not-secure
+        DEBUG: "1"
+        DB_NAME: forestal_test
+        DB_USER: forestal
+        DB_PASSWORD: test_password
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        python manage.py migrate
+
+    - name: Run tests with coverage
+      env:
+        SECRET_KEY: test-secret-key-for-ci-only-not-secure
+        DEBUG: "1"
+        DB_NAME: forestal_test
+        DB_USER: forestal
+        DB_PASSWORD: test_password
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        coverage run --source='.' manage.py test
+        coverage report
+        coverage xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+      continue-on-error: true

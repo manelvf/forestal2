@@ -1,0 +1,146 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ main, master, develop, "claude/*" ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: forestal_test
+          POSTGRES_USER: forestal
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Copy settings file
+      run: |
+        cp settings.example.py settings.py
+
+    - name: Run Django checks
+      env:
+        SECRET_KEY: test-secret-key-for-ci-only-not-secure
+        DEBUG: "0"
+        DB_NAME: forestal_test
+        DB_USER: forestal
+        DB_PASSWORD: test_password
+        DB_HOST: localhost
+        DB_PORT: 5432
+        ALLOWED_HOSTS: localhost,127.0.0.1
+      run: |
+        python manage.py check --deploy
+
+    - name: Run migrations
+      env:
+        SECRET_KEY: test-secret-key-for-ci-only-not-secure
+        DEBUG: "1"
+        DB_NAME: forestal_test
+        DB_USER: forestal
+        DB_PASSWORD: test_password
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        python manage.py migrate
+
+    - name: Run tests
+      env:
+        SECRET_KEY: test-secret-key-for-ci-only-not-secure
+        DEBUG: "1"
+        DB_NAME: forestal_test
+        DB_USER: forestal
+        DB_PASSWORD: test_password
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        python manage.py test --verbosity=2
+
+    - name: Run security checks
+      env:
+        SECRET_KEY: test-secret-key-for-ci-only-not-secure
+        DEBUG: "0"
+        DB_NAME: forestal_test
+        DB_USER: forestal
+        DB_PASSWORD: test_password
+        DB_HOST: localhost
+        DB_PORT: 5432
+        ALLOWED_HOSTS: localhost,127.0.0.1
+      run: |
+        python manage.py check --deploy --fail-level WARNING
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pylint bandit safety
+
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      continue-on-error: true
+
+    - name: Security check with bandit
+      run: |
+        bandit -r fincas/ empresas/ -f json -o bandit-report.json
+      continue-on-error: true
+
+    - name: Check dependencies for vulnerabilities
+      run: |
+        pip install -r requirements.txt
+        safety check --json
+      continue-on-error: true
+
+    - name: Upload bandit report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: bandit-security-report
+        path: bandit-report.json

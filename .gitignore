@@ -2,9 +2,18 @@ settings.py
 *.pyc
 *.sw*
 *.json
+*.backup
 .backup
 oficina
 oficina.*
 *.sqlite3
 node_modules/
+logs/
+*.log
+.env
+backups/
+staticfiles/
+media/
+*.sql
+*.sql.gz
 

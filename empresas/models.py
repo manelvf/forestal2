@@ -68,17 +68,24 @@ class Factura(models.Model):
     emision = models.DateField()
     
     def get_parcelas(self):
-        s = ""
+        from django.utils.html import format_html
+        from django.utils.safestring import mark_safe
+        from django.urls import reverse
 
+        links = []
         b = self.detallefactura_set.all()
-        if len(b) > 0:
-            for k in b:
-                s += '<a href="'+ ENV_BASE_URL +'/fincas/tala/'+str(k.servizo.id)+'" >' + str(k) + '</a> <br />'
 
-        return s
+        for detail in b:
+            if detail.servizo:
+                try:
+                    url = reverse('admin:fincas_tala_change', args=[detail.servizo.id])
+                except:
+                    url = f"/admin/fincas/tala/{detail.servizo.id}/change/"
+                links.append(format_html('<a href="{}">{}</a>', url, str(detail)))
+
+        return mark_safe('<br />'.join(links)) if links else ""
 
     get_parcelas.short_description = "Servizos"
-    get_parcelas.allow_tags=True
 
     def __str__(self):
         return str(self.emision) + str(self.numero) + " - " + str(self.empresa) + " - " + str(self.cliente)  

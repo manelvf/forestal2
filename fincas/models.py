@@ -376,17 +376,24 @@ class Tala(models.Model):
     obs = models.TextField(blank=True)
     
     def get_viaxes(self):
+        from django.utils.html import format_html
+        from django.urls import reverse
+
         n = self.viaxecamions.exclude(camion__exact=None)
         v = self.viaxecamions.all()
 
-        return str('<a href="' + settings.ENV_BASE_URL + '/listaviaxes/' + str(self.id) + '" >' +
-               str(len(n)) + '</a>' +
-							 '/' +
-               '<a href="' + settings.ENV_BASE_URL + '/listaviaxes/' + str(self.id) + '" >' +
-               str(len(v)) + '</a>')
+        # Use format_html for safe HTML rendering
+        try:
+            url = reverse('listaviaxes', args=[self.id])
+        except:
+            url = f"{settings.ENV_BASE_URL}/listaviaxes/{self.id}"
+
+        return format_html(
+            '<a href="{}">{}</a>/<a href="{}">{}</a>',
+            url, len(n), url, len(v)
+        )
 
     get_viaxes.short_description = 'N Viaxes'
-    get_viaxes.allow_tags = True
 
 
     class Meta:
